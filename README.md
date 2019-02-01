@@ -1,4 +1,4 @@
-# PhosphoProtemics Analysis
+# PhosphoProteomics Analysis
 
 Ths project is developed to analyze phosphoproteomics data. The analysis 
 includes:
