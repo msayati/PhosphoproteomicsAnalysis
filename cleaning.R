@@ -15,6 +15,11 @@ na_count <- data.frame(na_count)
 #view the dataframe
 print(na_count)
 
-#calculate columns that have more than 60% NA
+#calculate columns that have more than 40%NA
+forty_per_na <-colMeans(is.na(BreastCancerData)) > 0.4
+forty_per_na <- data.frame(forty_per_na)
 
 #delete those columns
+#creating a dataframe x to store the columns that have more
+#less than 40%NA
+x <- BreastCancerData[ lapply( BreastCancerData, function(x) sum(is.na(x)) / length(x) ) < .40 ]
