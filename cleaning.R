@@ -23,3 +23,14 @@ forty_per_na <- data.frame(forty_per_na)
 #creating a dataframe x to store the columns that have more
 #less than 40%NA
 x <- BreastCancerData[ lapply( BreastCancerData, function(x) sum(is.na(x)) / length(x) ) < .40 ]
+
+#delete rows with NA
+x <- x[complete.cases(x), ]
+
+#creating a data.frame that contains sum of NA's per column
+na_countnow <- sapply(x, function(y)
+  sum(length(which(is.na(y)))))
+na_countnow <- data.frame(na_countnow)
+
+#print the clean dataframe with no NA
+print(x)
