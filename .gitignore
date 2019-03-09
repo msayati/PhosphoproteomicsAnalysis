@@ -70,3 +70,4 @@ yarn-debug.log*
 
 # Ignore uploaded files in development
 .Rhistory
+.RData
