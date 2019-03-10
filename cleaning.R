@@ -1,11 +1,15 @@
 #setting library used
 library(readxl)
 
-## MUST BE SAVED AS A CSV FILE ##
+#reads in excel file
+BreastCancerData1 <- read_excel("data/BreastCancerData.xlsx",sheet = "S5.iTRAQ_phosphoproteome")
 
-BreastCancerData1 <- read.csv("BreastCancerData.csv")
+#converts it into csv file
+write.csv(BreastCancerData1,"data/BreastCancerData.csv",row.names=FALSE)
 
-#delete those columns
+#reads in csv file
+BreastCancerData1 <- read.csv("data/BreastCancerData.csv")
+
 #creating a dataframe x to store the columns that have more
 #less than 40%NA
 x <- BreastCancerData1[ lapply( BreastCancerData1, function(x) sum(is.na(x)) / length(x) ) < .40 ]
