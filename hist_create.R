@@ -5,15 +5,17 @@ install.packages("WGCNA")
 source("http://bioconductor.org/biocLite.R") 
 biocLite(c("GO.db", "preprocessCore", "impute"))
 
+library(WGCNA)
+
 #drops the first two columns because theyre not numeric value
-x <- x[,-c(1,2)]
+cleanBCD <- cleanBCD[,-c(1,2)]
 
 #does the correlation and saves it in dataframe corr
-corr <- bicor(t(x))
+corr <- bicor(t(cleanBCD))
 
 #dataframe upp contains the upper triangle of corr
 upp <- upper.tri(corr, diag = FALSE)
-upcorr <- corr[upp]
+BCD <- corr[upp]
 
 #creates histogram of data
-hist(upcorr)
+hist(BCD)
