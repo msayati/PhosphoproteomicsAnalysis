@@ -22,17 +22,29 @@ cleanBCD$geneSymbol_Site = substr(cleanBCD$geneSymbol_Site,1,nchar(cleanBCD$gene
 
 #For each unique kinase(k is the actual kinase, not an index)
 for (k in kinase_names$Kinase){
-  #find the substrate and site from kinase_human and store in subs
-  print(paste0("kinase: ", k))
-  subs <- kinase_human$SubstrateSite[which(k == kinase_human$Kinase)]
-  #subs <- as.factor(subs)
-  #print(subs)
   
-  subsinexp <- intersect(subs, cleanBCD$geneSymbol_Site)
-  if(length(subsinexp) == 0){
-    subsinexp <- 0
+  #find the substrate and site from kinase_human and store in subs
+  subs <- kinase_human$SubstrateSite[which(k == kinase_human$Kinase)]
+  
+  #find the intersection of substrate-site in breast cancer data:
+  #1. find the indices where the substrates-site from that kinase, match in BCD
+  subsinexp1 <- match(subs, cleanBCD$geneSymbol_Site)
+  #2. if the substrate-site isnt found, remove na
+  subsinexp1<-subsinexp1[!is.na(subsinexp1)]#intersect(subs, cleanBCD$geneSymbol_Site)
+  #3. store in data.frame
+  subsinexp12 <- cleanBCD[subsinexp1,]
+  if (length(subsinexp1) != 0)
+  {
+    print(cleanBCD$geneSymbol_Site[subsinexp1])
+    print(subsinexp12)
   }
-  print(paste0("subsinexp: ", subsinexp))
+  
+  #for each susbtrate-site in subsinexp, compute the pairwise correlation
+  if(nrow(subsinexp12) != 0){
+    subsinexp12 <- subsinexp12[,-c(1)]
+    paired_corr <- bicor(t(subsinexp12))
+    print(paired_corr)
+  }
 }
 
 
