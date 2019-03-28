@@ -31,21 +31,15 @@ for (k in kinase_names$Kinase){
   subsinexp1 <- match(subs, cleanBCD$geneSymbol_Site)
   #2. if the substrate-site isnt found, remove na
   subsinexp1<-subsinexp1[!is.na(subsinexp1)]#intersect(subs, cleanBCD$geneSymbol_Site)
-  print(subsinexp1)
   #3. store in data.frame
-  #subsinexp12 <- cleanBCD[subsinexp1,]
-  #if (length(subsinexp1) != 0)
-  #{
-   # print(cleanBCD$geneSymbol_Site[subsinexp1])
-    #print(subsinexp12)
-  #}
+  subsinexp12 <- unique(cleanBCD[subsinexp1,])
   
   #for each susbtrate-site in subsinexp, compute the pairwise correlation
-  #if(nrow(subsinexp12) != 0){
-    #subsinexp12 <- subsinexp12[,-c(1)]
-    #paired_corr <- bicor(t(subsinexp12))
-    #print(paired_corr)
-  #}
+  if(nrow(subsinexp12) != 0){
+    subsinexp13 <- subsinexp12[,-c(1)]
+    paired_corr <- bicor(t(subsinexp13))
+    print(paired_corr)
+  }
 }
 
 
