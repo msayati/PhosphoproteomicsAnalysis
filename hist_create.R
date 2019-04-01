@@ -15,7 +15,7 @@ corr <- bicor(t(cleanBCD))
 
 #dataframe upp contains the upper triangle of corr
 upp <- upper.tri(corr, diag = FALSE)
-BCD <- corr[upp]
+all_corr <- corr[upp]
 
 #creates histogram of data
-hist(BCD)
+hist(all_corr)
