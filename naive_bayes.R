@@ -24,28 +24,34 @@ grab_substrates <- function(k){
   return(pSites)
 }
 
-naive_bayes <- function(){ 
+naive_bayes <- function(S, A){ 
   #sharedLength <- length(S)
   c <- vector()
+  #summation term
+  Sum <- 0
+  
   for(psite in 1:length(cleanBCD)){
     p <- cleanBCD[psite,]
+    #convert to vector and remove kinase column
     p <- as.vector(unlist(p))
     p <- p[2:length(p)]
     
     for(k in kinase_names$Kinase){ 
       #grab substrates for k (while we figure out memory problem)
       kinase_sites <- grab_substrates(k)
-      
       if(nrow(kinase_sites) != 0) {
         for(i in nrow(kinase_sites)){
           #compute bicor correlation between sites and psite
           
           ksite <- as.vector(unlist(kinase_sites[i,]))
           ksite <- ksite[2:length(ksite)]
+          c <- bicor(p, ksite)
+          ########### naive bayes algorithm ###############
+          #compare c with every S
+          Sprob <- length(which(as.vector(unlist(lapply(S, function(x) c > x)))))
           
-          print(bicor(p, ksite))
-          append(c, bicor(p, ksite))
-          #naive bayes algorithm
+          Aprob <- length(which(as.vector(unlist(lapply(A, function(x) c > x)))))
+        
           
         }
       }
@@ -53,9 +59,10 @@ naive_bayes <- function(){
   }
 } 
 
-grab_substrates(kinase_names$Kinase[[49]])
-
-naive_bayes()
+#placeholder vectors
+S <- c(.5, .4, .3, .8, .7)
+A <- c(1)
+naive_bayes(S, A)
 
 
 
