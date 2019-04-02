@@ -25,20 +25,23 @@ for (k in kinase_names$Kinase){
   
   #find the substrate and site from kinase_human and store in subs
   subs <- kinase_human$SubstrateSite[which(k == kinase_human$Kinase)]
-  
   #find the intersection of substrate-site in breast cancer data:
   #1. find the indices where the substrates-site from that kinase, match in BCD
   subsinexp1 <- match(subs, cleanBCD$geneSymbol_Site)
   #2. if the substrate-site isnt found, remove na
-  subsinexp1<-subsinexp1[!is.na(subsinexp1)]#intersect(subs, cleanBCD$geneSymbol_Site)
+  subsinexp1<-subsinexp1[!is.na(subsinexp1)]
   #3. store in data.frame
   subsinexp12 <- unique(cleanBCD[subsinexp1,])
-  
+
   #for each susbtrate-site in subsinexp, compute the pairwise correlation
-  if(nrow(subsinexp12) != 0){
-    subsinexp13 <- subsinexp12[,-c(1)]
-    paired_corr <- bicor(t(subsinexp13))
+  if(nrow(subsinexp12) != 0 & nrow(subsinexp12) != 1){
+    subsinexp13 <- subsinexp12[,-c(1)]#removes non-numeric column
+    paired_corr <- bicor(t(subsinexp13))#computes the correlation
     print(paired_corr)
+    shared_corr <- paired_corr[upper.tri(paired_corr, diag = FALSE)]
+    print(shared_corr)
+    shared_corr <- append(shared_corr, shared_corr, after = length(shared_corr))
+    print(shared_corr)
   }
 }
 
