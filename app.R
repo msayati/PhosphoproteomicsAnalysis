@@ -18,11 +18,15 @@ ui <- fluidPage(
   sidebarLayout(
     # our inputs will go here
     sidebarPanel(
+      # user can decide if they want to share their data with us
+      checkboxInput("shareData", "Leave checked if you would like to share your data", TRUE),
       # user can upload an excel file
       fileInput("file", "Choose Excel File", multiple = FALSE,
                 accept = c(".xlsx"),
                 width = NULL, buttonLabel = "Browse...",
                 placeholder = "No file selected"),
+      # user can choose a sheet location number
+      numericInput("sheet", "Sheet", 1, min = 1, max = 100),
       # user can choose a threshold number
       numericInput("threshold", "Desired Threshold Percentage", 40, min = 1, max = 100),
       # user can select (max) the top 5 predictions
