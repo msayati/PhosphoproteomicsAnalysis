@@ -1,5 +1,5 @@
 #downloading needed packages for this script
-install.packages("readxl")
+#install.packages("readxl")
 
 #setting library used
 library(readxl)
