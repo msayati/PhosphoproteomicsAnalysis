@@ -3,7 +3,7 @@ library(shiny)
 library(readxl)
 
 # Required R Scripts
-source("../cleaning.R")
+#source("../cleaning.R")
 
 # Changes shiny limit file upload to 40MB
 options(shiny.maxRequestSize = 40*1024^2)
