@@ -15,13 +15,21 @@ ui <- fluidPage(
   sidebarLayout(
     # our inputs will go here
     sidebarPanel(
+      # user can upload an excel file
       fileInput("file", "Choose Excel File", multiple = FALSE,
                 accept = c(".xlsx"),
                 width = NULL, buttonLabel = "Browse...",
-                placeholder = "No file selected")
+                placeholder = "No file selected"),
+      # user can choose a threshold number
+      numericInput("threshold", "Desired Threshold Percentage", 40, min = 1, max = 100),
+      # user can select (max) the top 5 predictions
+      selectInput("topPredcitionNumInput", "Top Predction(s)",
+                  choices = c("1", "2", "3", "4", "5"))
     ),
     # results will go here
-    mainPanel(tableOutput("contents"))
+    mainPanel(
+      tableOutput("contents")
+    )
   )
 )
 
