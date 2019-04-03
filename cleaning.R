@@ -1,14 +1,14 @@
 #downloading needed packages for this script
-install.packages("readxl")
+#install.packages("readxl")
 
 #setting library used
 library(readxl)
 
 # function to clean breast cancer data given the file location as a string
-clean.bcd<-function(bcd){
+clean.bcd<-function(bcd, sh, threshold){
   
   #reads in excel file
-  BreastCancerData1 <- read_excel(bcd,sheet = "S5.iTRAQ_phosphoproteome")
+  BreastCancerData1 <- read_excel(bcd,sheet = as.numeric(sh))
   
   #converts it into csv file
   write.csv(BreastCancerData1,"data/BreastCancerData.csv",row.names=FALSE)
@@ -18,7 +18,7 @@ clean.bcd<-function(bcd){
   
   #creating a dataframe cleanBCD to store the columns that have more
   #less than 40%NA
-  cleanBCD <- BreastCancerData1[ lapply( BreastCancerData1, function(cleanBCD) sum(is.na(cleanBCD)) / length(cleanBCD) ) < .40 ]
+  cleanBCD <- BreastCancerData1[ lapply( BreastCancerData1, function(cleanBCD) sum(is.na(cleanBCD)) / length(cleanBCD) ) < as.numeric(threshold) ]
   
   #delete rows with NA
   cleanBCD <- cleanBCD[complete.cases(cleanBCD), ]
@@ -27,4 +27,4 @@ clean.bcd<-function(bcd){
 }
 
 file <- "data/BreastCancerData.xlsx"
-cleanBCD <- clean.bcd(file)
+cleanBCD <- clean.bcd(file, 2, .40)
