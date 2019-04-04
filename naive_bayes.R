@@ -25,15 +25,24 @@ grab_substrates <- function(k){
   return(pSites)
 }
 
-naive_bayes <- function(S, A){ 
+
+final_table <- function(krankMatrix, topCount){
+  #create table of all kinase ranks
+  
+  
+  #create table of only top count 
+}
+
+naive_bayes <- function(S, A, topCount){ 
   #Read the KSA_human file in the data
   
-  #sharedLength <- length(S)
+  sharedLength <- length(S)
+  allLength <- length(A)
   #summation term
   Sum <- 0
   index <- 0
   kinaseRank <- matrix(ncol=2)
-  for(psite in 1:length(cleanBCD)){
+  for(psite in 1:nrow(cleanBCD)){
     p <- cleanBCD[psite,]
     #convert to vector and remove kinase column
     p <- as.vector(unlist(p))
@@ -56,27 +65,29 @@ naive_bayes <- function(S, A){
           
           Aprob <- length(which(as.vector(unlist(lapply(A, function(x) c > x))))) + 1
           
-          Sum <- Sum + log2(Sprob/Aprob)
+          Sum <- Sum + log2((Sprob/sharedLength)/(Aprob/allLength))
+          
           
         }
-        #add sum for kinase i in kinaseRank vector
+        #add sum for kinase i in kinaseRank matrix with index of kinase(kinase_names)
         kinaseRank <- rbind(kinaseRank, c(index, Sum))
+        
         
       }
     }
     
   }
-  print(kinaseRank)
+  #print(kinaseRank)
+  print(length(kinaseRank))
+  
 } 
 
 #placeholder vectors
 S <- c(.5, .4, .3, .8, .7)
 A <- c(.2, .3, .8, .3, .3, .2, .1, .1, .1, .7, .5, .4, .3, .4, .3, .1, .01, .01, .01, .01, .01)
-naive_bayes(S, A)
+naive_bayes(S, A, 3)
 
 
 
-
-m <- matrix(data=c(1,3,3,4,5,6,3,8,3), nrow=3, ncol=3)
 
 
