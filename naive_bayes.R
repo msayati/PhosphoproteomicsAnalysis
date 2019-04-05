@@ -25,16 +25,18 @@ grab_substrates <- function(k){
   return(pSites)
 }
 
-#add to a data frame
-build_table <- function(table, site, newKRank){
-  
-}
 
 #returns the final table of all kinase correlations with psite
 #and returns the top N rank in a data frame with kinases as columns
-final_table <- function(krankMatrix, topCount){
+final_table <- function(kcorTable, topCount){
   #create table of all kinase ranks
-  
+  topNTable <- data.frame(col)
+  tempRow <- list()
+  for(psite in 1:length(kcorTable)){
+    tempRow <- order(kcorTable[psite,], decreasing=TRUE)
+    print(tempRow)
+  }
+  tempRow <- c()
   
   #create table of only top count 
 }
@@ -53,7 +55,7 @@ naive_bayes <- function(S, A, topCount){
   ###############################################
   
   
-  for(psite in 1:nrow(cleanBCD)){
+  for(psite in 1:(nrow(cleanBCD)-22200)){
     p <- cleanBCD[psite,]
     #site name 
     pSiteName <- unlist(p[1])
@@ -86,6 +88,7 @@ naive_bayes <- function(S, A, topCount){
         #add sum for kinase i in kinaseRank matrix with index of kinase(kinase_names)
         kinaseRank <- rbind(kinaseRank, c(index, Sum))
         currentTable[pSiteName, k] <- Sum
+        
        # currentTable <- build_table(currentTable, pSiteName, kinaseRank)
         
       }
@@ -95,7 +98,8 @@ naive_bayes <- function(S, A, topCount){
   #print(kinaseRank)
   print(length(kinaseRank))
   print(currentTable)
-  return (currentTable)
+  finalTable <- final_table(currentTable, 5)
+  return(currentTable)
   
 } 
 
