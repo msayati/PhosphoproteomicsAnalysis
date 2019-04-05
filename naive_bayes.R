@@ -38,16 +38,15 @@ final_table <- function(kcorTable, topCount){
     tempRow <- sort(kcorTable[psite,], decreasing=TRUE)
     #grab top N
     for (i in 1:topCount){
-      topNTable[kColNames[psite], i] <- c(colnames(kcorTable)[tempIndex[i]], tempRow[i])
+      topNTable[kColNames[psite], i] <- list(colnames(kcorTable)[tempIndex[i]], tempRow[i])
     }
   }
-  #set column names for table
-  colnames(topNTable) <- c("one", "two", "three", "four", "five")
+  
   print(topNTable)
   
 }
 
-naive_bayes <- function(S, A, topCount){ 
+naive_bayes <- function(S, A, topCount, test=FAlSE){ 
   ########## required data structures ###########
   sharedLength <- length(S)
   allLength <- length(A)
@@ -57,15 +56,20 @@ naive_bayes <- function(S, A, topCount){
   kinaseRank <- matrix(ncol=2)
   currentTable <- data.frame()
   
-  
+  #set testing length to compute sample matrix
+  if(test){
+    runningLength = 25
+  }
+  else{
+    runningLength = nrow(cleanBCD)
+  }
   ###############################################
   
   
-  for(psite in 1:(nrow(cleanBCD)-22200)){
+  for(psite in 1:runningLength){
     p <- cleanBCD[psite,]
     #site name 
     pSiteName <- unlist(p[1])
-    print(pSiteName)
     #convert to vector and remove kinase column
     p <- as.vector(unlist(p))
     p <- p[2:length(p)]
@@ -95,32 +99,21 @@ naive_bayes <- function(S, A, topCount){
         kinaseRank <- rbind(kinaseRank, c(index, Sum))
         currentTable[pSiteName, k] <- Sum
         
-       # currentTable <- build_table(currentTable, pSiteName, kinaseRank)
-        
       }
     }
     
   }
-  
-  #print(kinaseRank)
-  print(length(kinaseRank))
-  print(currentTable)
-  finalTable <- final_table(currentTable, 5)
-  return(currentTable)
+  finalTable <- final_table(currentTable, topCount)
+  #returns table with all correlations between individual kinases(no order) and
+  #returns table with topN Kinases(names currently, working on adding probability value)
+  return(list(currentTable, finalTable))
   
 } 
 
 #placeholder vectors
 S <- c(.5, .4, .3, .8, .7)
 A <- c(.2, .3, .8, .3, .3, .2, .1, .1, .1, .7, .5, .4, .3, .4, .3, .1, .01, .01, .01, .01, .01)
-table <- naive_bayes(S, A, 3)
-
-
-k <- data.frame()
-k[1,1] <- 9
-k[1,2] <- 8
-k[1,3] <- 7
-l <- order(k[1,], decreasing=TRUE)
+table <- naive_bayes(S, A, 3, TRUE)
 
 
 
