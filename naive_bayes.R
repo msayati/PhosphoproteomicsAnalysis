@@ -30,15 +30,21 @@ grab_substrates <- function(k){
 #and returns the top N rank in a data frame with kinases as columns
 final_table <- function(kcorTable, topCount){
   #create table of all kinase ranks
-  topNTable <- data.frame(col)
-  tempRow <- list()
-  for(psite in 1:length(kcorTable)){
-    tempRow <- order(kcorTable[psite,], decreasing=TRUE)
-    print(tempRow)
-  }
-  tempRow <- c()
+  topNTable <- data.frame()
+  kColNames <- unlist(rownames(kcorTable))
   
-  #create table of only top count 
+  for(psite in 1:nrow(kcorTable)){
+    tempIndex <- order(kcorTable[psite,], decreasing=TRUE)
+    tempRow <- sort(kcorTable[psite,], decreasing=TRUE)
+    #grab top N
+    for (i in 1:topCount){
+      topNTable[kColNames[psite], i] <- c(colnames(kcorTable)[tempIndex[i]], tempRow[i])
+    }
+  }
+  #set column names for table
+  colnames(topNTable) <- c("one", "two", "three", "four", "five")
+  print(topNTable)
+  
 }
 
 naive_bayes <- function(S, A, topCount){ 
@@ -95,6 +101,7 @@ naive_bayes <- function(S, A, topCount){
     }
     
   }
+  
   #print(kinaseRank)
   print(length(kinaseRank))
   print(currentTable)
@@ -107,5 +114,16 @@ naive_bayes <- function(S, A, topCount){
 S <- c(.5, .4, .3, .8, .7)
 A <- c(.2, .3, .8, .3, .3, .2, .1, .1, .1, .7, .5, .4, .3, .4, .3, .1, .01, .01, .01, .01, .01)
 table <- naive_bayes(S, A, 3)
+
+
+k <- data.frame()
+k[1,1] <- 9
+k[1,2] <- 8
+k[1,3] <- 7
+l <- order(k[1,], decreasing=TRUE)
+
+
+
+
 
 
