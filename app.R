@@ -60,42 +60,51 @@ ui <- fluidPage(
 # Server code for app
 server <- function(input, output) {
   
+  # reactive variables (if values change, app will automatically update with the new values)
+  currentSheet <- reactive({ input$sheet })
+  currentThreshold <- reactive({ input$threshold })
+  currentTPNI <- reactive({ input$topPredcitionNumInput })
+  
+  # reactive inputs must be wrapped in a render function
+  observe({print(input$sheet)})
+  observe({print(input$threshold)})
+  observe({print(input$topPredcitionNumInput)})
+  
   # Displays data uploaded onto website
   # Note: for now, it's accessing sheet 1, sheet 2 crashes (I think due to size)
   output$contents <- renderTable({
-    
     # Dataframe stores the uploaded file
     inFile <- input$file
+    #checks if no file has been uploaded
+    if(is.null(inFile))
+      return(NULL)
     
     # Prints in console
     #print(str(inFile))
     
-    if(is.null(inFile))
-      return(NULL)
     file.rename(inFile$datapath,
                 paste(inFile$datapath, ".xlsx", sep=""))
-    read_excel(paste(inFile$datapath, ".xlsx", sep=""), 1)
+    read_excel(paste(inFile$datapath, ".xlsx", sep=""), currentSheet())
   })
   
   # histogram of correlations of clean data
   output$corrPlot <- renderPlot({
     inFile <- input$file
-    # if no file has been uploaded (to avoid bugs)
+     # if no file has been uploaded (to avoid bugs)
     if (is.null(inFile)) {
       return(NULL)
     }
     
     #cleans the given data
     #FIX: passing a dataframe not an excel file so program will display errors. Need to fix cleaning.R
-    cleandata <- clean.bcd(input$file, input$sheet, input$threshold)
+    cleandata <- clean.bcd(input$file, currentSheet(), currentThreshold())
     
     # computes correlation & contains upper triangle of corr (stored in dataframe)
     all_corr <- all_paircorr(cleandata)
     
-    # historgram of correlations (need to fix)
+    # historgram of correlations
     hist(all_corr)
   })
-  
 }
 
 # Run the application 
