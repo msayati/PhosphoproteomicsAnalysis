@@ -21,7 +21,7 @@ all_paircorr <- function(cbcd){
   return(all_corr)
 }
 
-all_corr <- all_paircorr(cleanBCD)
-
-#creates histogram of data
-hist(all_corr)
+# Code to test working function:
+# all_corr <- all_paircorr(cleanBCD)
+# Creates histogram of data
+# hist(all_corr)
