@@ -4,7 +4,8 @@ library(readxl)
 
 # Required R Scripts
 source("cleaning.R")
-#source("hist_create.R")
+source("hist_create.R")
+#source("naive_bayes.R") #edit function? error: object cleanBCD not found
 
 # Changes shiny limit file upload to 40MB
 options(shiny.maxRequestSize = 40*1024^2)
@@ -52,7 +53,10 @@ ui <- fluidPage(
       br(),
       
       # displays histogram of correlations
-      plotOutput(outputId = "corrPlot")
+      plotOutput(outputId = "corrPlot"),
+      
+      # displays a table with the desired top predictions
+      tableOutput("topPredTable")
     )
   )
 )
@@ -70,8 +74,7 @@ server <- function(input, output) {
   observe({print(input$threshold)})
   observe({print(input$topPredcitionNumInput)})
   
-  # Displays data uploaded onto website
-  # Note: for now, it's accessing sheet 1, sheet 2 crashes (I think due to size)
+  # Displays current sheet data uploaded onto website (will update if sheet changed)
   output$contents <- renderTable({
     # Dataframe stores the uploaded file
     inFile <- input$file
@@ -104,6 +107,11 @@ server <- function(input, output) {
     
     # historgram of correlations
     hist(all_corr)
+  })
+  
+  # Displays current sheet data uploaded onto website (will update if sheet changed)
+  output$topPredTable <- renderTable({
+    # fix error about cleanBCD
   })
 }
 

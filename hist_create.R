@@ -1,9 +1,9 @@
 #installing packages containing bicor
-install.packages("WGCNA")
+#install.packages("WGCNA")
 
 #manually installing GO.db if error happens
-source("http://bioconductor.org/biocLite.R") 
-biocLite(c("GO.db", "preprocessCore", "impute"))
+#source("http://bioconductor.org/biocLite.R") 
+#biocLite(c("GO.db", "preprocessCore", "impute"))
 
 library(WGCNA)
 

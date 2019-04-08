@@ -1,6 +1,6 @@
 
-install.packages("magrittr")
-install.packages("tidyr")
+#install.packages("magrittr")
+#install.packages("tidyr")
 library("WGCNA")
 
 library(tidyr)
