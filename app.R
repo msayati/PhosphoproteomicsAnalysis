@@ -8,7 +8,7 @@ source("hist_create.R")
 #source("naive_bayes.R") #edit function? error: object cleanBCD not found
 
 # Changes shiny limit file upload to 40MB
-options(shiny.maxRequestSize = 40*1024^2)
+options(shiny.maxRequestSize = 100*1024^2)
 
 # UI for app
 ui <- fluidPage(
@@ -33,30 +33,35 @@ ui <- fluidPage(
       
       # user can choose a sheet location number
       numericInput("sheet", "Sheet", 1, min = 1, max = 100),
-     
+      
+      
       # user can choose a threshold number
-      numericInput("threshold", "Desired Threshold Percentage", 40, min = 1, max = 100),
+      numericInput("threshold", "Missing Information Limit", 40, min = 1, max = 100),
       
       # user can select (max) the top 5 predictions
-      selectInput("topPredcitionNumInput", "Top Predction(s)",
-                  choices = c("1", "2", "3", "4", "5"))
+      selectInput("topPredcitionNumInput", "Top Prediction(s)",
+                  choices = c("5", "1", "2", "3", "4"))
     ),
     
     # results will go here
     mainPanel(
       
-      # displays a table with the sheet contents
-      tableOutput("contents"),
+      # tabsets
+      tabsetPanel(
+        # displays a table with the sheet contents
+        tabPanel("Data", tableOutput("contents")),
+        
+        # displays histogram of correlations
+        tabPanel("Co-phosphorylation", plotOutput(outputId = "corrPlot")),
+        
+        # displays a table with the desired top predictions
+        tabPanel("Predictions", tableOutput("topPredTable"))#,
+        
+        #tabPanel("Cophosk+", ),
+        
+        #tabPanel("ksea", )
+      )
       
-      # breaks/spacing
-      br(),
-      br(),
-      
-      # displays histogram of correlations
-      plotOutput(outputId = "corrPlot"),
-      
-      # displays a table with the desired top predictions
-      tableOutput("topPredTable")
     )
   )
 )
