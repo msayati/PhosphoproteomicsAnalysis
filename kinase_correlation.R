@@ -20,6 +20,7 @@ cleanBCD %<>% unite(geneSymbol_Site, geneSymbol, variableSites, sep="-", remove 
 #removing the last char from cleanBCD
 cleanBCD$geneSymbol_Site = substr(cleanBCD$geneSymbol_Site,1,nchar(cleanBCD$geneSymbol_Site)-1)
 
+vectorS = vector('numeric')
 #For each unique kinase(k is the actual kinase, not an index)
 for (k in kinase_names$Kinase){
   
@@ -37,14 +38,9 @@ for (k in kinase_names$Kinase){
   if(nrow(subsinexp12) != 0 & nrow(subsinexp12) != 1){
     subsinexp13 <- subsinexp12[,-c(1)]#removes non-numeric column
     paired_corr <- bicor(t(subsinexp13))#computes the correlation
-    print(paired_corr)
+   # print(paired_corr) 
     shared_corr <- paired_corr[upper.tri(paired_corr, diag = FALSE)]
-    print(shared_corr)
-    shared_corr <- append(shared_corr, shared_corr, after = length(shared_corr))
-    print(shared_corr)
+    
+    vectorS <- append(vectorS, shared_corr, after = length(vectorS))
   }
 }
-
-
-
-
