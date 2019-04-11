@@ -34,9 +34,11 @@ ui <- fluidPage(
       # user can choose a sheet location number
       numericInput("sheet", "Sheet", 1, min = 1, max = 100),
       
-      
-      # user can choose a threshold number
-      numericInput("threshold", "Missing Information Limit", 40, min = 1, max = 100),
+      # when user hovers over this area, text will appear
+      tags$div(title="Cool description goes here",
+        # user can choose a threshold number
+        numericInput("threshold", "Missing Information Limit", 40, min = 1, max = 100)
+      ),
       
       # user can select (max) the top 5 predictions
       selectInput("topPredcitionNumInput", "Top Prediction(s)",
