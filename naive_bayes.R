@@ -1,15 +1,22 @@
 
 install.packages("magrittr")
 install.packages("tidyr")
+install.packages("impute")
+install.packages("rlang")
 library("WGCNA")
 
 library(tidyr)
+library(rlang)
+library(impute)
 library(magrittr)
 library(dplyr)
 library(stringr)
 library(BiocGenerics)
+library(foreach)
+library(doParallel)
 
-grab_substrates <- function(k){
+
+grab_substrates <- function(k){ 
   #find the substrate and site from kinase_human and store in subs
   substrates <- kinase_human$SubstrateSite[which(k == kinase_human$Kinase)]
   #find the intersection of substrate-site in breast cancer data:
@@ -36,7 +43,7 @@ final_table <- function(kcorTable, topCount){
   for(psite in 1:nrow(kcorTable)){
     tempIndex <- order(kcorTable[psite,], decreasing=TRUE)
     tempRow <- sort(kcorTable[psite,], decreasing=TRUE)
-    #grab top N
+    #grab top N 
     for (i in 1:topCount){
       topNTable[kColNames[psite], i] <- list(colnames(kcorTable)[tempIndex[i]], tempRow[i])
     }
@@ -46,10 +53,19 @@ final_table <- function(kcorTable, topCount){
   
 }
 
+
 naive_bayes <- function(S, A, topCount, test=FAlSE){ 
+  ###### start parallel processing #########
+  cores = detectCores()
+  #creates parallel socket cluster(so threads can communicate)
+  commNet <- makeCluster(cores[1]-1)
+  #register parallel backend with foreach package
+  registerDoParallel(commNet)
+  
+  allowWGCNAThreads()
   ########## required data structures ###########
   sharedLength <- length(S)
-  allLength <- length(A)
+  allLength <- length(A)  
   #summation term
   Sum <- 0
   index <- 0
@@ -57,7 +73,7 @@ naive_bayes <- function(S, A, topCount, test=FAlSE){
   currentTable <- data.frame()
   
   #set testing length to compute sample matrix
-  if(test){
+  if(test) {
     runningLength = 25
   }
   else{
@@ -66,7 +82,7 @@ naive_bayes <- function(S, A, topCount, test=FAlSE){
   ###############################################
   
   
-  for(psite in 1:runningLength){
+  for(psite in 1:runningLength) {
     p <- cleanBCD[psite,]
     #site name 
     pSiteName <- unlist(p[1])
@@ -81,7 +97,8 @@ naive_bayes <- function(S, A, topCount, test=FAlSE){
       kinase_sites <- grab_substrates(k)
       if(nrow(kinase_sites) != 0) {
         #set current table column names
-        for(i in nrow(kinase_sites)){
+        registerDoSEQ()
+        foreach(i=1:nrow(kinase_sites), .packages=c('WGCNA', 'rlang')) %dopar% {
           #compute bicor correlation between sites and psite
           ksite <- as.vector(unlist(kinase_sites[i,]))
           ksite <- ksite[2:length(ksite)]
@@ -95,6 +112,7 @@ naive_bayes <- function(S, A, topCount, test=FAlSE){
           Sum <- Sum + log2((Sprob/sharedLength)/(Aprob/allLength))
           
         }
+        #stopCluster(commNet)
         #add sum for kinase i in kinaseRank matrix with index of kinase(kinase_names)
         kinaseRank <- rbind(kinaseRank, c(index, Sum))
         currentTable[pSiteName, k] <- Sum
@@ -103,9 +121,11 @@ naive_bayes <- function(S, A, topCount, test=FAlSE){
     }
     
   }
+  
   finalTable <- final_table(currentTable, topCount)
   #returns table with all correlations between individual kinases(no order) and
   #returns table with topN Kinases(names currently, working on adding probability value)
+  stopCluster(commNet)
   return(list(currentTable, finalTable))
   
 } 
