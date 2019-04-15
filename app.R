@@ -35,7 +35,7 @@ ui <- fluidPage(
       numericInput("sheet", "Sheet", 1, min = 1, max = 100),
       
       # when user hovers over this area, text will appear
-      tags$div(title="Cool description goes here",
+      tags$div(title="Threshold: this is the percentage of NA data in columns that will be ignored. Ex. 40%, will compute correlations with columns that have less than 40% NA",
         # user can choose a threshold number
         numericInput("threshold", "Missing Information Limit", 40, min = 1, max = 100)
       ),
@@ -75,11 +75,16 @@ server <- function(input, output) {
   currentSheet <- reactive({ input$sheet })
   currentThreshold <- reactive({ input$threshold })
   currentTPNI <- reactive({ input$topPredcitionNumInput })
+  # this is the actual data that we can use to find correlations
+  rawData <- eventReactive(input$file, {
+    read_excel(input$file$datapath)
+  })
   
   # reactive inputs must be wrapped in a render function
   observe({print(input$sheet)})
   observe({print(input$threshold)})
   observe({print(input$topPredcitionNumInput)})
+  observe({print(rawData())})
   
   # Displays current sheet data uploaded onto website (will update if sheet changed)
   output$contents <- renderTable({
@@ -89,9 +94,6 @@ server <- function(input, output) {
     if(is.null(inFile))
       return(NULL)
     
-    # Prints in console
-    #print(str(inFile))
-    
     file.rename(inFile$datapath,
                 paste(inFile$datapath, ".xlsx", sep=""))
     read_excel(paste(inFile$datapath, ".xlsx", sep=""), currentSheet())
@@ -100,14 +102,15 @@ server <- function(input, output) {
   # histogram of correlations of clean data
   output$corrPlot <- renderPlot({
     inFile <- input$file
+    print(inFile, digits = NULL,
+          quote = FALSE, right = TRUE, row.names = FALSE, max = NULL)
      # if no file has been uploaded (to avoid bugs)
     if (is.null(inFile)) {
       return(NULL)
     }
     
     #cleans the given data
-    #FIX: passing a dataframe not an excel file so program will display errors. Need to fix cleaning.R
-    cleandata <- clean.bcd(input$file, currentSheet(), currentThreshold())
+    cleandata <- clean.bcd(rawData(), currentSheet(), currentThreshold())
     
     # computes correlation & contains upper triangle of corr (stored in dataframe)
     all_corr <- all_paircorr(cleandata)

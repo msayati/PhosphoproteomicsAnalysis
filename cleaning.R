@@ -8,16 +8,15 @@ library(readxl)
 clean.bcd<-function(bcd, sh, threshold){
   
   #reads in excel file
-  BreastCancerData1 <- read_excel(bcd,sheet = as.numeric(sh))
+  #BreastCancerData1 <- read_excel(bcd,sheet = as.numeric(sh))
   
   #converts it into csv file
-  write.csv(BreastCancerData1,"data/BreastCancerData.csv",row.names=FALSE)
+  write.csv(bcd, "data/BreastCancerData.csv", row.names=FALSE)
   
   #reads in csv file
   BreastCancerData1 <- read.csv("data/BreastCancerData.csv")
   
-  #creating a dataframe cleanBCD to store the columns that have more
-  #less than 40%NA
+  #creating a dataframe cleanBCD to store the columns that have less than 40% NA
   cleanBCD <- BreastCancerData1[ lapply( BreastCancerData1, function(cleanBCD) sum(is.na(cleanBCD)) / length(cleanBCD) ) < as.numeric(threshold) ]
   
   #delete rows with NA
