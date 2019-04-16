@@ -22,6 +22,11 @@ clean.bcd<-function(bcd, sh, threshold){
   #delete rows with NA
   cleanBCD <- cleanBCD[complete.cases(cleanBCD), ]
   
+  #if there are negative values in data, they are already in log2. Convert them back. 
+  if(sum(cleanBCD[,-c(1,2)] < 0) > 0){
+    cleanBCD <- 2^cleanBCD[,-c(1,2)]
+  }
+  
   return(cleanBCD)
 }
 
