@@ -25,24 +25,34 @@ ui <- fluidPage(
       # user can decide if they want to share their data with us
       checkboxInput("shareData", "Leave checked if you would like to share your data", TRUE),
       
-      # user can upload an excel file
-      fileInput("file", "Choose Excel File", multiple = FALSE,
-                accept = c(".xlsx"),
-                width = NULL, buttonLabel = "Browse...",
-                placeholder = "No file selected"),
+      hr(),
+      
+      helpText("Note: Please select the inputs before uploading an excel file. Errors may occur if you change the settings after uploading the file."),
       
       # user can choose a sheet location number
-      numericInput("sheet", "Sheet", 1, min = 1, max = 100),
+      tags$div(title="Sheet: sheet number where the data is located.",
+        numericInput("sheet", "Sheet", 1, min = 1, max = 100)
+      ),
       
       # when user hovers over this area, text will appear
-      tags$div(title="Threshold: this is the percentage of NA data in columns that will be ignored. Ex. 40%, will compute correlations with columns that have less than 40% NA",
+      tags$div(title="Missing Information Limit: percentage of NA data in columns that will be ignored (threshold). Ex. 40%, will compute correlations with columns that have less than 40% NA.",
         # user can choose a threshold number
         numericInput("threshold", "Missing Information Limit", 40, min = 1, max = 100)
       ),
       
       # user can select (max) the top 5 predictions
-      selectInput("topPredcitionNumInput", "Top Prediction(s)",
-                  choices = c("5", "1", "2", "3", "4"))
+      tags$div(title="Top Prediction(s): number of predictions to be calculated.",
+        selectInput("topPredcitionNumInput", "Top Prediction(s)",
+                    choices = c("5", "1", "2", "3", "4"))
+      ),
+      
+      hr(),
+      
+      # user can upload an excel file
+      fileInput("file", "Choose Excel File", multiple = FALSE,
+                accept = c(".xlsx"),
+                width = NULL, buttonLabel = "Browse...",
+                placeholder = "No file selected")
     ),
     
     # results will go here
@@ -57,11 +67,11 @@ ui <- fluidPage(
         tabPanel("Co-phosphorylation", plotOutput(outputId = "corrPlot")),
         
         # displays a table with the desired top predictions
-        tabPanel("Predictions", tableOutput("topPredTable"))#,
+        tabPanel("Predictions", tableOutput("topPredTable")),
         
-        #tabPanel("Cophosk+", ),
+        tabPanel("Cophosk+", tableOutput("cplus")),
         
-        #tabPanel("ksea", )
+        tabPanel("KSEA", tableOutput("ksea"))
       )
       
     )
@@ -76,8 +86,9 @@ server <- function(input, output) {
   currentThreshold <- reactive({ input$threshold })
   currentTPNI <- reactive({ input$topPredcitionNumInput })
   # this is the actual data that we can use to find correlations
+  # note: this will only grab the current sheet that has been selected before upload. It will NOT update hist
   rawData <- eventReactive(input$file, {
-    read_excel(input$file$datapath)
+    read_excel(input$file$datapath, sheet = currentSheet())
   })
   
   # reactive inputs must be wrapped in a render function
@@ -115,13 +126,21 @@ server <- function(input, output) {
     # computes correlation & contains upper triangle of corr (stored in dataframe)
     all_corr <- all_paircorr(cleandata)
     
-    # historgram of correlations
     hist(all_corr)
+    
   })
   
   # Displays current sheet data uploaded onto website (will update if sheet changed)
   output$topPredTable <- renderTable({
-    # fix error about cleanBCD
+    
+  })
+  
+  output$cplus <- renderTable({
+    
+  })
+  
+  output$ksea <- renderTable({
+    
   })
 }
 
