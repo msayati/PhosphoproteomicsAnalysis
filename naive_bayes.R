@@ -57,13 +57,13 @@ final_table <- function(kcorTable, topCount){
 
 naive_bayes <- function(S, A, topCount, test=FAlSE){ 
   ###### start parallel processing #########
-  cores = detectCores()
+  #cores = detectCores()
   #creates parallel socket cluster(so threads can communicate)
-  commNet <- makeCluster(cores[1]-1)
+  #commNet <- makeCluster(cores[1])
   #register parallel backend with foreach package
-  registerDoParallel(commNet)
+  #registerDoParallel(commNet)
   
-  allowWGCNAThreads()
+  #allowWGCNAThreads()
   ########## required data structures ###########
   sharedLength <- length(S)
   allLength <- length(A)  
@@ -98,8 +98,9 @@ naive_bayes <- function(S, A, topCount, test=FAlSE){
       kinase_sites <- grab_substrates(k)
       if(nrow(kinase_sites) != 0) {
         #set current table column names
-        registerDoSEQ()
-        foreach(i=1:nrow(kinase_sites), .packages=c('WGCNA', 'rlang')) %dopar% {
+        #registerDoSEQ()
+        #foreach(i=1:nrow(kinase_sites), .packages=c('WGCNA', 'rlang')) %dopar% {
+        for(i in 1:nrow(kinase_sites)){
           #compute bicor correlation between sites and psite
           ksite <- as.vector(unlist(kinase_sites[i,]))
           ksite <- ksite[2:length(ksite)]
@@ -126,7 +127,7 @@ naive_bayes <- function(S, A, topCount, test=FAlSE){
   finalTable <- final_table(currentTable, topCount)
   #returns table with all correlations between individual kinases(no order) and
   #returns table with topN Kinases(names currently, working on adding probability value)
-  stopCluster(commNet)
+  #stopCluster(commNet)
   return(list(currentTable, finalTable))
   
 } 
