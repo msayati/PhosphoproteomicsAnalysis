@@ -64,14 +64,15 @@ ui <- fluidPage(
         tabPanel("Data", tableOutput("contents")),
         
         # displays histogram of correlations
-        tabPanel("Co-phosphorylation", plotOutput(outputId = "corrPlot")),
+        tabPanel("Co-phosphorylation", plotOutput(outputId = "corrPlot"), br(),
+                 plotOutput(outputId = "kinasecPlot"), br(), plotOutput(outputId = "bayesPlot")),
         
         # displays a table with the desired top predictions
         tabPanel("Predictions", tableOutput("topPredTable")),
         
         tabPanel("Cophosk+", tableOutput("cplus")),
         
-        tabPanel("KSEA", tableOutput("ksea"))
+        tabPanel("KSEA", plotOutput(outputId = "ksea"))
       )
       
     )
@@ -110,7 +111,7 @@ server <- function(input, output) {
     read_excel(paste(inFile$datapath, ".xlsx", sep=""), currentSheet())
   })
   
-  # histogram of correlations of clean data
+  # histogram of correlations of clean data: "Vector A"
   output$corrPlot <- renderPlot({
     inFile <- input$file
     print(inFile, digits = NULL,
@@ -126,7 +127,18 @@ server <- function(input, output) {
     # computes correlation & contains upper triangle of corr (stored in dataframe)
     all_corr <- all_paircorr(cleandata)
     
-    hist(all_corr)
+    hist(all_corr, main="Histogram for Correlation of the Clean Data")
+    #the historgram here should be daniels output, not clean bcd
+    
+  })
+  
+  # histogram from kinase_correlation.R : "Vector S"
+  output$kinasecPlot <- renderPlot({
+    
+  })
+  
+  # histogram from naive_bayes.R
+  output$bayesPlot <- renderPlot({
     
   })
   
@@ -135,11 +147,13 @@ server <- function(input, output) {
     
   })
   
+  # a table
   output$cplus <- renderTable({
     
   })
   
-  output$ksea <- renderTable({
+  # a histogram
+  output$ksea <- renderPlot({
     
   })
 }
