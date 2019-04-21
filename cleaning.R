@@ -4,7 +4,7 @@
 #setting library used
 library(readxl)
 
-# function to clean breast cancer data given the file location as a string
+# function to clean
 clean.bcd<-function(bcd, sh, threshold){
   
   #reads in excel file
