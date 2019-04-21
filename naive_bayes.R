@@ -17,7 +17,7 @@ library(foreach)
 library(doParallel)
 
 
-grab_substrates <- function(k){ 
+grab_substrates <- function(k, cleanBCD){ 
   #find the substrate and site from kinase_human and store in subs
   substrates <- kinase_human$SubstrateSite[which(k == kinase_human$Kinase)]
   #find the intersection of substrate-site in breast cancer data:
@@ -55,7 +55,7 @@ final_table <- function(kcorTable, topCount){
 }
 
 
-naive_bayes <- function(S, A, topCount, test=FAlSE){ 
+naive_bayes <- function(S, A, topCount, test=FAlSE, cleanBCD){ 
   ###### start parallel processing #########
   #cores = detectCores()
   #creates parallel socket cluster(so threads can communicate)
@@ -95,7 +95,7 @@ naive_bayes <- function(S, A, topCount, test=FAlSE){
       index <- index + 1
       Sum <- 0
       #grab substrates for k (while we figure out memory problem)
-      kinase_sites <- grab_substrates(k)
+      kinase_sites <- grab_substrates(k, cleanBCD)
       if(nrow(kinase_sites) != 0) {
         #set current table column names
         #registerDoSEQ()
@@ -133,9 +133,9 @@ naive_bayes <- function(S, A, topCount, test=FAlSE){
 } 
 
 #placeholder vectors
-S <- c(.5, .4, .3, .8, .7)
-A <- c(.2, .3, .8, .3, .3, .2, .1, .1, .1, .7, .5, .4, .3, .4, .3, .1, .01, .01, .01, .01, .01)
-table <- naive_bayes(S, A, 3, TRUE)
+#S <- c(.5, .4, .3, .8, .7)
+#A <- c(.2, .3, .8, .3, .3, .2, .1, .1, .1, .7, .5, .4, .3, .4, .3, .1, .01, .01, .01, .01, .01)
+#table <- naive_bayes(S, A, 3, TRUE)
 
 
 

@@ -147,7 +147,19 @@ server <- function(input, output) {
   
   # histogram from naive_bayes.R
   output$bayesPlot <- renderPlot({
+    #cleans the given data
+    cleandata <- clean.bcd(rawData(), currentSheet(), currentThreshold())
     
+    # computes correlation & contains upper triangle of corr (stored in dataframe)
+    all_corr <- all_paircorr(cleandata)
+    
+    # computes correlation with kinase_human.txt & cleandata
+    vectorS <- kinase.correlation(cleandata)
+    
+    # need to verify the correct variables for the params; S? A?
+    nb <- naive_bayes(S, A, currentTPNI(), test=FAlSE, cleanBCD)
+    
+    hist(all_corr, main="Histogram using Naive Bayes")
   })
   
   # Displays current sheet data uploaded onto website (will update if sheet changed)
