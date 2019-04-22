@@ -5,6 +5,7 @@ library(readxl)
 # Required R Scripts
 source("cleaning.R")
 source("hist_create.R")
+source("kinase_correlation.R")
 #source("naive_bayes.R") #edit function? error: object cleanBCD not found
 
 # Changes shiny limit file upload to 40MB
@@ -128,18 +129,37 @@ server <- function(input, output) {
     all_corr <- all_paircorr(cleandata)
     
     hist(all_corr, main="Histogram for Correlation of the Clean Data")
-    #the historgram here should be daniels output, not clean bcd
-    
   })
   
   # histogram from kinase_correlation.R : "Vector S"
   output$kinasecPlot <- renderPlot({
+    #cleans the given data
+    cleandata <- clean.bcd(rawData(), currentSheet(), currentThreshold())
     
+    # computes correlation & contains upper triangle of corr (stored in dataframe)
+    all_corr <- all_paircorr(cleandata)
+    
+    # computes correlation with kinase_human.txt & cleandata
+    vectorS <- kinase.correlation(cleandata)
+    
+    hist(all_corr, main="Histogram for Correlation of the Kinase_human.txt")
   })
   
   # histogram from naive_bayes.R
   output$bayesPlot <- renderPlot({
+    #cleans the given data
+    cleandata <- clean.bcd(rawData(), currentSheet(), currentThreshold())
     
+    # computes correlation & contains upper triangle of corr (stored in dataframe)
+    all_corr <- all_paircorr(cleandata)
+    
+    # computes correlation with kinase_human.txt & cleandata
+    vectorS <- kinase.correlation(cleandata)
+    
+    # need to verify the correct variables for the params; S? A?
+    nb <- naive_bayes(S, A, currentTPNI(), test=FAlSE, cleanBCD)
+    
+    hist(all_corr, main="Histogram using Naive Bayes")
   })
   
   # Displays current sheet data uploaded onto website (will update if sheet changed)
