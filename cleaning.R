@@ -8,7 +8,7 @@ library(readxl)
 clean.bcd<-function(bcd, sh, threshold){
   
   #reads in excel file
-  #BreastCancerData1 <- read_excel(bcd,sheet = as.numeric(sh))
+  #BreastCancerData1 <- read_excel(bcd, sheet = as.numeric(sh))
   
   #converts it into csv file
   write.csv(bcd, "data/BreastCancerData.csv", row.names=FALSE)
@@ -24,7 +24,7 @@ clean.bcd<-function(bcd, sh, threshold){
   
   #if there are negative values in data, they are already in log2. Convert them back. 
   if(sum(cleanBCD[,-c(1,2)] < 0) > 0){
-    cleanBCD <- 2^cleanBCD[,-c(1,2)]
+    cleanBCD <- data.frame(cleanBCD[,c(1,2)], 2^cleanBCD[,-c(1,2)])
   }
   
   return(cleanBCD)
