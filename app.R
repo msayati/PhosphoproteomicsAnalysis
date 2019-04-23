@@ -142,6 +142,7 @@ server <- function(input, output) {
     # computes correlation with kinase_human.txt & cleandata
     vectorS <- kinase.correlation(cleandata)
     
+    #should be vectorS: getting error on breaks
     hist(all_corr, main="Histogram for Correlation of the Kinase_human.txt")
   })
   
@@ -156,8 +157,10 @@ server <- function(input, output) {
     # computes correlation with kinase_human.txt & cleandata
     vectorS <- kinase.correlation(cleandata)
     
-    # need to verify the correct variables for the params; S? A?
-    nb <- naive_bayes(S, A, currentTPNI(), test=FAlSE, cleanBCD)
+    # naive bayes
+    kinase_human <- read.clean.KSA()
+    kinase_names <- uniqueK.KSA(kinase_human)
+    nb <- naive_bayes(vectorS, all_corr, currentTPNI(), test=FALSE, cleandata, kinase_names, kinase_human)
     
     # displays table
     nb

@@ -4,15 +4,29 @@
 library(magrittr)
 library(tidyr)
 
-kinase.correlation<-function(cleanBCD){
+read.clean.KSA<-function(){
   #Read the KSA_human file in the data
   kinase_human <- read.table("data/KSA_human.txt", header = TRUE, sep="", fill=TRUE)
   
   #clean data 
   kinase_human <- kinase_human[!apply(kinase_human, 1, function(x) any(x == "")),]
   
+  return(kinase_human)
+}
+
+uniqueK.KSA<-function(kinase_human){
   #Create a list of unique kinase
   kinase_names <- unique(kinase_human[1])
+  
+  return(kinase_names)
+}
+
+kinase.correlation<-function(cleanBCD){
+  
+  kinase_human <- read.clean.KSA()
+  
+  kinase_names <- uniqueK.KSA(kinase_human)
+  
   
   #concatenating substrate and site in kinase_human for easy retrieval
   kinase_human %<>% unite(SubstrateSite, Substrate, Site, sep="-", remove = TRUE)
