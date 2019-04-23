@@ -1,5 +1,5 @@
 #function to check if package already installed
-install_packageIF <- function(pack){
+install_packagesIF <- function(pack){
   if(pack %in% rownames(installed.packages()) == FALSE){
     print(paste0("Installing package."))
     install.packages(pack)
