@@ -6,14 +6,10 @@ install_packageIF("rlang")
 library("WGCNA")
 
 library(tidyr)
-library(rlang)
-library(impute)
 library(magrittr)
 library(dplyr)
 library(stringr)
 library(BiocGenerics)
-library(foreach)
-library(doParallel)
 
 #returns the final table of all kinase correlations with psite
 #and returns the top N rank in a data frame with kinases as columns
@@ -37,14 +33,6 @@ final_table <- function(kcorTable, topCount){
 
 
 naive_bayes <- function(S, A, topCount, test=FAlSE, cleanBCD, kinase_names, kinase_human){ 
-  ###### start parallel processing #########
-  #cores = detectCores()
-  #creates parallel socket cluster(so threads can communicate)
-  #commNet <- makeCluster(cores[1])
-  #register parallel backend with foreach package
-  #registerDoParallel(commNet)
-  
-  #allowWGCNAThreads()
   ########## required data structures ###########
   sharedLength <- length(S)
   allLength <- length(A)  
@@ -79,8 +67,6 @@ naive_bayes <- function(S, A, topCount, test=FAlSE, cleanBCD, kinase_names, kina
       kinase_sites <- grab_substrates(k, cleanBCD, kinase_human)
       if(nrow(kinase_sites) != 0) {
         #set current table column names
-        #registerDoSEQ()
-        #foreach(i=1:nrow(kinase_sites), .packages=c('WGCNA', 'rlang')) %dopar% {
         for(i in 1:nrow(kinase_sites)){
           #compute bicor correlation between sites and psite
           ksite <- as.vector(unlist(kinase_sites[i,]))
@@ -95,7 +81,6 @@ naive_bayes <- function(S, A, topCount, test=FAlSE, cleanBCD, kinase_names, kina
           Sum <- Sum + log2((Sprob/sharedLength)/(Aprob/allLength))
           
         }
-        #stopCluster(commNet)
         #add sum for kinase i in kinaseRank matrix with index of kinase(kinase_names)
         kinaseRank <- rbind(kinaseRank, c(index, Sum))
         currentTable[pSiteName, k] <- Sum
@@ -108,15 +93,10 @@ naive_bayes <- function(S, A, topCount, test=FAlSE, cleanBCD, kinase_names, kina
   finalTable <- final_table(currentTable, topCount)
   #returns table with all correlations between individual kinases(no order) and
   #returns table with topN Kinases(names currently, working on adding probability value)
-  #stopCluster(commNet)
   return(list(currentTable, finalTable))
   
 } 
 
-#placeholder vectors
-#S <- c(.5, .4, .3, .8, .7)
-#A <- c(.2, .3, .8, .3, .3, .2, .1, .1, .1, .7, .5, .4, .3, .4, .3, .1, .01, .01, .01, .01, .01)
-#table <- naive_bayes(S, A, 3, TRUE)
 
 
 
