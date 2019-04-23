@@ -1,3 +1,6 @@
+install_packageIF("ggplot2")
+library(ggplot2)
+
 #calculating the average of each row
 FC <- data.frame(cleanBCD[1], Means=rowMeans(cleanBCD[,-1]))
 
@@ -40,8 +43,17 @@ pos <- kscore1[which(kscore1$score > 0),]
 
 #ordering neg in descending order and pos in ascending
 neg <- neg[with(neg, order(score, decreasing = TRUE)),]
-pos <- pos[with(pos, order(score, decreasing = FALSE)),]
+pos <- pos[with(pos, order(score)),]
 
 #getting the top 10 of neg and top 10 of pos
-top10neg <- top10neg[1:10,]
-top10pos <- top10pos[1:10,]
+top10neg <- neg[10:1,]
+top10pos <- pos[1:10,]
+
+#combining the top 10 for graph
+top10 <- rbind(top10neg, top10pos)
+
+#plotting horizontal histogram
+ggplot(data=top10, aes(x=Kinase,y=score)) +
+  geom_bar(stat="identity") +
+  scale_x_discrete(limits=top10$Kinase) + 
+  coord_flip()
