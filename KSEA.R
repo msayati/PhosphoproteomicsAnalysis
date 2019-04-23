@@ -28,3 +28,4 @@ for (k in kinase_names$Kinase){
 
 #sorting in ascending order
 sorted_kinaseScores = sort(kinase_score, decreasing = FALSE)
+

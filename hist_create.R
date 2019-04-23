@@ -1,5 +1,5 @@
 #installing packages containing bicor
-#install.packages("WGCNA")
+install_packagesIF("WGCNA")
 
 #manually installing GO.db if error happens
 #source("http://bioconductor.org/biocLite.R") 
@@ -22,6 +22,6 @@ all_paircorr <- function(cbcd){
 }
 
 # Code to test working function:
-# all_corr <- all_paircorr(cleanBCD)
+all_corr <- all_paircorr(cleanBCD)
 # Creates histogram of data
 # hist(all_corr)

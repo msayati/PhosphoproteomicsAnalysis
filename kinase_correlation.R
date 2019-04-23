@@ -1,6 +1,6 @@
 #installing necessary packages and loading libraries
-#install.packages("magrittr")
-#install.packages("tidyr")
+install_packageIF("magrittr")
+install_packageIF("tidyr")
 library(magrittr)
 library(tidyr)
 

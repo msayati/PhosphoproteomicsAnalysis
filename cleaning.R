@@ -1,8 +1,19 @@
+#function to check if package already installed
+install_packageIF <- function(pack){
+  if(pack %in% rownames(installed.packages()) == FALSE){
+    print(paste0("Installing package."))
+    install.packages(pack)
+  }
+  else{
+    print(paste0("Package already installed."))
+  }
+}
 #downloading needed packages for this script
-#install.packages("readxl")
+install_packagesIF("readxl")
 
 #setting library used
 library(readxl)
+
 
 # function to clean
 clean.bcd<-function(bcd, sh, threshold){
