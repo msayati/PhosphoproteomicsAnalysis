@@ -21,6 +21,20 @@ uniqueK.KSA<-function(kinase_human){
   return(kinase_names)
 }
 
+grab_substrates <- function(k, cleanBCD, kinase_human){ 
+  #find the substrate and site from kinase_human and store in subs
+  substrates <- kinase_human$SubstrateSite[which(k == kinase_human$Kinase)]
+  #find the intersection of substrate-site in breast cancer data:
+  #1. find the indices where the substrates-site from that kinase, match in BCD
+  subsinexp1 <- match(substrates, cleanBCD$geneSymbol_Site)
+  #2. if the substrate-site isnt found, remove na
+  subsinexp1<-subsinexp1[!is.na(subsinexp1)]
+  
+  pSites <- unique(cleanBCD[subsinexp1,])
+  pSites <- as.vector(pSites)
+  return(pSites)
+}
+
 kinase.correlation<-function(cleanBCD){
   
   kinase_human <- read.clean.KSA()
@@ -39,15 +53,7 @@ kinase.correlation<-function(cleanBCD){
   #For each unique kinase(k is the actual kinase, not an index)
   for (k in kinase_names$Kinase){
     
-    #find the substrate and site from kinase_human and store in subs
-    subs <- kinase_human$SubstrateSite[which(k == kinase_human$Kinase)]
-    #find the intersection of substrate-site in breast cancer data:
-    #1. find the indices where the substrates-site from that kinase, match in BCD
-    subsinexp1 <- match(subs, cleanBCD$geneSymbol_Site)
-    #2. if the substrate-site isnt found, remove na
-    subsinexp1<-subsinexp1[!is.na(subsinexp1)]
-    #3. store in data.frame
-    subsinexp12 <- unique(cleanBCD[subsinexp1,])
+    subsinexp12 <- grab_substrates(k, cleanBCD, kinase_human)
   
     #for each susbtrate-site in subsinexp, compute the pairwise correlation
     if(nrow(subsinexp12) != 0 & nrow(subsinexp12) != 1){

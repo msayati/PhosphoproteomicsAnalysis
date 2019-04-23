@@ -16,24 +16,6 @@ library(BiocGenerics)
 library(foreach)
 library(doParallel)
 
-
-grab_substrates <- function(k, cleanBCD, kinase_human){ 
-  #find the substrate and site from kinase_human and store in subs
-  substrates <- kinase_human$SubstrateSite[which(k == kinase_human$Kinase)]
-  #find the intersection of substrate-site in breast cancer data:
-  #1. find the indices where the substrates-site from that kinase, match in BCD
-  
-  subsinexp1 <- match(substrates, cleanBCD$geneSymbol_Site)
-  
-  #2. if the substrate-site isnt found, remove na
-  subsinexp1<-subsinexp1[!is.na(subsinexp1)]
-  
-  pSites <- cleanBCD[subsinexp1,]
-  pSites <- as.vector(pSites)
-  return(pSites)
-}
-
-
 #returns the final table of all kinase correlations with psite
 #and returns the top N rank in a data frame with kinases as columns
 final_table <- function(kcorTable, topCount){
