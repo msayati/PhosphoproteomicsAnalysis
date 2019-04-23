@@ -6,7 +6,7 @@ library(readxl)
 source("cleaning.R")
 source("hist_create.R")
 source("kinase_correlation.R")
-#source("naive_bayes.R") #edit function? error: object cleanBCD not found
+source("naive_bayes.R")
 
 # Changes shiny limit file upload to 40MB
 options(shiny.maxRequestSize = 100*1024^2)
@@ -66,7 +66,7 @@ ui <- fluidPage(
         
         # displays histogram of correlations
         tabPanel("Co-phosphorylation", plotOutput(outputId = "corrPlot"), br(),
-                 plotOutput(outputId = "kinasecPlot"), br(), plotOutput(outputId = "bayesPlot")),
+                 plotOutput(outputId = "kinasecPlot")),
         
         # displays a table with the desired top predictions
         tabPanel("Predictions", tableOutput("topPredTable")),
@@ -145,8 +145,8 @@ server <- function(input, output) {
     hist(all_corr, main="Histogram for Correlation of the Kinase_human.txt")
   })
   
-  # histogram from naive_bayes.R
-  output$bayesPlot <- renderPlot({
+  # Displays current sheet data uploaded onto website (will update if sheet changed)
+  output$topPredTable <- renderTable({
     #cleans the given data
     cleandata <- clean.bcd(rawData(), currentSheet(), currentThreshold())
     
@@ -159,12 +159,8 @@ server <- function(input, output) {
     # need to verify the correct variables for the params; S? A?
     nb <- naive_bayes(S, A, currentTPNI(), test=FAlSE, cleanBCD)
     
-    hist(all_corr, main="Histogram using Naive Bayes")
-  })
-  
-  # Displays current sheet data uploaded onto website (will update if sheet changed)
-  output$topPredTable <- renderTable({
-    
+    # displays table
+    nb
   })
   
   # a table
