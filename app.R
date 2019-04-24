@@ -65,7 +65,7 @@ ui <- fluidPage(
         tabPanel("Data", tableOutput("contents")),
         
         # displays histogram of correlations
-        tabPanel("Co-phosphorylation", plotOutput(outputId = "corrPlot"), br(),
+        tabPanel("Co-phosphorylation", plotOutput(outputId = "corrPlot"), downloadButton("downloadA", "Download"), br(),
                  plotOutput(outputId = "kinasecPlot")),
         
         # displays a table with the desired top predictions
@@ -112,6 +112,30 @@ server <- function(input, output) {
     read_excel(paste(inFile$datapath, ".xlsx", sep=""), currentSheet())
   })
   
+  test <- reactive({ 
+    inFile <- input$file
+    print(inFile, digits = NULL,
+          quote = FALSE, right = TRUE, row.names = FALSE, max = NULL)
+    # if no file has been uploaded (to avoid bugs)
+    if (is.null(inFile)) {
+      return(NULL)
+    }
+    #cleans the given data
+    cleandata <- clean.bcd(rawData(), currentSheet(), currentThreshold())
+  })
+  
+  test2 <- reactive({ 
+    inFile <- input$file
+    print(inFile, digits = NULL,
+          quote = FALSE, right = TRUE, row.names = FALSE, max = NULL)
+    # if no file has been uploaded (to avoid bugs)
+    if (is.null(inFile)) {
+      return(NULL)
+    }
+    
+    all_corr <- all_paircorr(test())
+  })
+  
   # histogram of correlations of clean data: "Vector A"
   output$corrPlot <- renderPlot({
     inFile <- input$file
@@ -126,10 +150,21 @@ server <- function(input, output) {
     cleandata <- clean.bcd(rawData(), currentSheet(), currentThreshold())
     
     # computes correlation & contains upper triangle of corr (stored in dataframe)
-    all_corr <- all_paircorr(cleandata)
+    all_corr <- all_paircorr(test())##cleandata)
     
-    hist(all_corr, main="Histogram for Correlation of the Clean Data")
+    hist(test2(), main="Histogram for Correlation of the Clean Data")#all_corr, main="Histogram for Correlation of the Clean Data")
   })
+  
+  output$downloadA <- downloadHandler(
+    filename = function() {
+      paste("vectorA", ".png", sep = "")
+    },
+    content = function(file) {
+      png(file)
+      hist(test2(), main="Histogram for Correlation of the Clean Data")
+      dev.off()
+    }
+  )
   
   # histogram from kinase_correlation.R : "Vector S"
   output$kinasecPlot <- renderPlot({
@@ -146,6 +181,7 @@ server <- function(input, output) {
     
     # computes correlation with kinase_human.txt & cleandata
     vectorS <- kinase.correlation(cleandata)
+    print(class(vectorS))
     
     hist(vectorS, main="Histogram for Correlation of the Kinase_human.txt")
   })
@@ -172,7 +208,7 @@ server <- function(input, output) {
     # naive bayes
     kinase_human <- read.clean.KSA()
     kinase_names <- uniqueK.KSA(kinase_human)
-    #nb <- naive_bayes(vectorS, all_corr, as.integer(input$topPredcitionNumInput), test=TRUE, cleandata, kinase_names, kinase_human)
+    nb <- naive_bayes(vectorS, all_corr, currentTPNI(), test=TRUE, cleandata, kinase_names, kinase_human)
     
     # displays table
     #nb[[2]]
