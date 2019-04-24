@@ -74,5 +74,6 @@ kinase.correlation<-function(cleanData){
       vectorS <- append(vectorS, shared_corr, after = length(vectorS))
     }
   }
+  
   return(vectorS)
 }
