@@ -1,7 +1,6 @@
-
-
+library(ggplot2)
 #row randomization
-randomPlot <- function(dataArray){
+randomPlot <- function(dataArray, allCorr, sharedKinaseCorr){
   #remove first column
   dataArray <- dataArray[-c(1)]
   #generate random data
@@ -32,8 +31,28 @@ randomPlot <- function(dataArray){
   bcors <- bcors[bcorsIndex == TRUE]
   print(bcors)
   
+  #convert to data frame
+  bcors <- data.frame(bcors)
+  names(bcors) <- NULL
+  allCorr <- data.frame(allCorr)
+  names(allCorr) <- NULL
+  sharedKinaseCorr <- data.frame(sharedKinaseCorr)
+  names(sharedKinaseCorr) <- NULL
+  
+  
+  #set where data is from
+  bcors$from <- 'random'
+  allCorr$from <- 'all'
+  sharedKinaseCorr$from <- 'shared'
+  print("after")
+  
+  allLengths <- rbind(bcors, allCorr)
+  allLengths <- rbind(allLengths, sharedKinaseCorr)
+  
+  
   #normalize y axis
-  hist(bcors)
+  
+  ggplot(allLengths, aes(length, fill = from)) + geom_density(alpha = 0.2)
   #plot correlation values
   
   #plot all pairs/shared-kinase pairs/randomized al pairs
@@ -47,6 +66,10 @@ realThree = sample(1:20, 8, replace=F)
 realFour = sample(1:20, 8, replace=F)
 
 data = data.frame(one = realOne, two = realTwo, three = realThree, four = realFour)
+alls = c(0.2, 0.8, 0.9)
+shared = c(0.9, 0.1, 0.1)
+
+
 
 print(data)
-randomPlot(data)
+randomPlot(data, alls, shared)
