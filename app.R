@@ -1,6 +1,7 @@
 # Required libraries
 library(shiny)
 library(readxl)
+library(ggplot2)
 
 # Required R Scripts
 source("cleaning.R")
@@ -129,6 +130,17 @@ server <- function(input, output) {
     kinase.correlation(cleandata())
   })
   
+  top10 <- reactive({
+    inFile <- input$file
+    print(inFile, digits = NULL,
+          quote = FALSE, right = TRUE, row.names = FALSE, max = NULL)
+    # if no file has been uploaded (to avoid bugs)
+    if (is.null(inFile)) {
+      return(NULL)
+    }
+    
+    KSEA(cleandata())
+  })
   # reactive inputs must be wrapped in a render function
   observe({print(input$sheet)})
   observe({print(input$threshold)})
@@ -216,6 +228,9 @@ server <- function(input, output) {
     # computes correlation with kinase_human.txt & cleandata
     vectorS <- kinase.correlation(cleandata)
     
+    #computes top10
+    top10 <- KSEA(cleandata)
+    
     # naive bayes
     kinase_human <- read.clean.KSA()
     kinase_names <- uniqueK.KSA(kinase_human)
@@ -232,6 +247,18 @@ server <- function(input, output) {
   
   # a histogram
   output$ksea <- renderPlot({
+    inFile <- input$file
+    print(inFile, digits = NULL,
+          quote = FALSE, right = TRUE, row.names = FALSE, max = NULL)
+    # if no file has been uploaded (to avoid bugs)
+    if (is.null(inFile)) {
+      return(NULL)
+    }
+     ggplot(data=top10(), aes(x=Kinase,y=score)) +
+     geom_bar(stat="identity") +
+     scale_x_discrete(limits=top10$Kinase) +
+     coord_flip() + scale_color_brewer(palette="Paired") + theme_classic()
+   #hist(all_corr(), main="Histogram for Correlation of the Clean Data")
     
   })
 }

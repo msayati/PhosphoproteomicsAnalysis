@@ -1,6 +1,7 @@
 install_packageIF("ggplot2")
 library(ggplot2)
 
+KSEA <-function(cleanBCD){
 #calculating the average of each row
 FC <- data.frame(cleanBCD[1], Means=rowMeans(cleanBCD[,-1]))
 
@@ -52,8 +53,12 @@ top10pos <- pos[1:10,]
 #combining the top 10 for graph
 top10 <- rbind(top10neg, top10pos)
 
+return(top10)
+}
+
+testing <- KSEA(cleanBCD)
 #plotting horizontal histogram
-ggplot(data=top10, aes(x=Kinase,y=score)) +
+  ggplot(data=top10, aes(x=Kinase,y=score)) +
   geom_bar(stat="identity") +
-  scale_x_discrete(limits=top10$Kinase) + 
+  scale_x_discrete(limits=datas$Kinase) + 
   coord_flip() + scale_color_brewer(palette="Paired") + theme_classic()
