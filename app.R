@@ -65,8 +65,8 @@ ui <- fluidPage(
         tabPanel("Data", tableOutput("contents")),
         
         # displays histogram of correlations
-        tabPanel("Co-phosphorylation", plotOutput(outputId = "corrPlot"), downloadButton("downloadA", "Download"), br(),
-                 plotOutput(outputId = "kinasecPlot")),
+        tabPanel("Co-phosphorylation", plotOutput(outputId = "corrPlot"), downloadButton("downloadH1", "Download"), br(),
+                 plotOutput(outputId = "kinasecPlot"), downloadButton("downloadH2", "Download")),
         
         # displays a table with the desired top predictions
         tabPanel("Predictions", tableOutput("topPredTable")),
@@ -93,6 +93,42 @@ server <- function(input, output) {
     read_excel(input$file$datapath, sheet = currentSheet())
   })
   
+  cleandata <- reactive({ 
+    inFile <- input$file
+    print(inFile, digits = NULL,
+          quote = FALSE, right = TRUE, row.names = FALSE, max = NULL)
+    # if no file has been uploaded (to avoid bugs)
+    if (is.null(inFile)) {
+      return(NULL)
+    }
+    #cleans the given data
+    clean.bcd(rawData(), currentSheet(), currentThreshold())
+  })
+  
+  all_corr <- reactive({ 
+    inFile <- input$file
+    print(inFile, digits = NULL,
+          quote = FALSE, right = TRUE, row.names = FALSE, max = NULL)
+    # if no file has been uploaded (to avoid bugs)
+    if (is.null(inFile)) {
+      return(NULL)
+    }
+    # computes correlation & contains upper triangle of corr (stored in dataframe)
+    all_paircorr(cleandata())
+  })
+  
+  vectorS <- reactive({ 
+    inFile <- input$file
+    print(inFile, digits = NULL,
+          quote = FALSE, right = TRUE, row.names = FALSE, max = NULL)
+    # if no file has been uploaded (to avoid bugs)
+    if (is.null(inFile)) {
+      return(NULL)
+    }
+    # computes correlation with kinase_human.txt & cleandata
+    kinase.correlation(cleandata())
+  })
+  
   # reactive inputs must be wrapped in a render function
   observe({print(input$sheet)})
   observe({print(input$threshold)})
@@ -112,30 +148,6 @@ server <- function(input, output) {
     read_excel(paste(inFile$datapath, ".xlsx", sep=""), currentSheet())
   })
   
-  test <- reactive({ 
-    inFile <- input$file
-    print(inFile, digits = NULL,
-          quote = FALSE, right = TRUE, row.names = FALSE, max = NULL)
-    # if no file has been uploaded (to avoid bugs)
-    if (is.null(inFile)) {
-      return(NULL)
-    }
-    #cleans the given data
-    cleandata <- clean.bcd(rawData(), currentSheet(), currentThreshold())
-  })
-  
-  test2 <- reactive({ 
-    inFile <- input$file
-    print(inFile, digits = NULL,
-          quote = FALSE, right = TRUE, row.names = FALSE, max = NULL)
-    # if no file has been uploaded (to avoid bugs)
-    if (is.null(inFile)) {
-      return(NULL)
-    }
-    
-    all_corr <- all_paircorr(test())
-  })
-  
   # histogram of correlations of clean data: "Vector A"
   output$corrPlot <- renderPlot({
     inFile <- input$file
@@ -146,22 +158,17 @@ server <- function(input, output) {
       return(NULL)
     }
     
-    #cleans the given data
-    cleandata <- clean.bcd(rawData(), currentSheet(), currentThreshold())
-    
-    # computes correlation & contains upper triangle of corr (stored in dataframe)
-    all_corr <- all_paircorr(test())##cleandata)
-    
-    hist(test2(), main="Histogram for Correlation of the Clean Data")#all_corr, main="Histogram for Correlation of the Clean Data")
+    hist(all_corr(), main="Histogram for Correlation of the Clean Data")
   })
   
-  output$downloadA <- downloadHandler(
+  #filename and type will not display properly in RStudio, but it will in browsers
+  output$downloadH1 <- downloadHandler(
     filename = function() {
-      paste("vectorA", ".png", sep = "")
+      paste("histogram1", ".png", sep = "")
     },
-    content = function(file) {
-      png(file)
-      hist(test2(), main="Histogram for Correlation of the Clean Data")
+    content = function(filename) {
+      png(filename)
+      hist(all_corr(), main="Histogram for Correlation of the Clean Data")
       dev.off()
     }
   )
@@ -176,15 +183,19 @@ server <- function(input, output) {
       return(NULL)
     }
     
-    #cleans the given data
-    cleandata <- clean.bcd(rawData(), currentSheet(), currentThreshold())
-    
-    # computes correlation with kinase_human.txt & cleandata
-    vectorS <- kinase.correlation(cleandata)
-    print(class(vectorS))
-    
-    hist(vectorS, main="Histogram for Correlation of the Kinase_human.txt")
+    hist(vectorS(), main="Histogram for Correlation of the Kinase_human.txt")
   })
+  
+  output$downloadH2 <- downloadHandler(
+    filename = function() {
+      paste("histogram2", ".png", sep = "")
+    },
+    content = function(filename) {
+      png(filename)
+      hist(vectorS(), main="Histogram for Correlation of the Clean Data")
+      dev.off()
+    }
+  )
   
   # Displays current sheet data uploaded onto website (will update if sheet changed)
   output$topPredTable <- renderTable({
