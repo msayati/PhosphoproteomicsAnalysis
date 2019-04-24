@@ -1,5 +1,5 @@
 #function to check if package already installed
-install_packagesIF <- function(pack){
+install_packageIF <- function(pack){
   if(pack %in% rownames(installed.packages()) == FALSE){
     print(paste0("Installing package."))
     install.packages(pack)
@@ -9,7 +9,7 @@ install_packagesIF <- function(pack){
   }
 }
 #downloading needed packages for this script
-install_packagesIF("readxl")
+install_packageIF("readxl")
 
 #setting library used
 library(readxl)

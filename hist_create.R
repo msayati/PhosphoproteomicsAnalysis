@@ -1,5 +1,5 @@
 #installing packages containing bicor
-install_packagesIF("WGCNA")
+install_packageIF("WGCNA")
 
 #manually installing GO.db if error happens
 #source("http://bioconductor.org/biocLite.R") 
