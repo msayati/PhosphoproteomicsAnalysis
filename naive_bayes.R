@@ -29,7 +29,7 @@ final_table <- function(kcorTable, topCount){
     }
   }
   
-  print(topNTable)
+  return(topNTable)
   
 }
 
@@ -93,11 +93,12 @@ naive_bayes <- function(S, A, topCount, test=FAlSE, cleanData, kinase_names, kin
     
   }
   
+  
   finalTable <- final_table(currentTable, topCount)
   #returns table with all correlations between individual kinases(no order) and
   #returns table with topN Kinases(names currently, working on adding probability value)
   return(list(currentTable, finalTable))
-  
+
 } 
 
 
