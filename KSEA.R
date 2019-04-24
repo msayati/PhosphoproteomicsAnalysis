@@ -56,4 +56,4 @@ top10 <- rbind(top10neg, top10pos)
 ggplot(data=top10, aes(x=Kinase,y=score)) +
   geom_bar(stat="identity") +
   scale_x_discrete(limits=top10$Kinase) + 
-  coord_flip()
+  coord_flip() + scale_color_brewer(palette="Paired") + theme_classic()
