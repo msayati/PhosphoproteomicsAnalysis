@@ -11,6 +11,8 @@ library(dplyr)
 library(stringr)
 library(BiocGenerics)
 
+source("kinase_correlation.R")
+
 #returns the final table of all kinase correlations with psite
 #and returns the top N rank in a data frame with kinases as columns
 final_table <- function(kcorTable, topCount){
@@ -32,7 +34,8 @@ final_table <- function(kcorTable, topCount){
 }
 
 
-naive_bayes <- function(S, A, topCount, test=FAlSE, cleanBCD, kinase_names, kinase_human){ 
+naive_bayes <- function(S, A, topCount, test=FAlSE, cleanData, kinase_names, kinase_human){
+  cleanBCD <- symbol.site(cleanData)
   ########## required data structures ###########
   sharedLength <- length(S)
   allLength <- length(A)  

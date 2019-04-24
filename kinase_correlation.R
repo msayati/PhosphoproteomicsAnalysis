@@ -21,6 +21,14 @@ uniqueK.KSA<-function(kinase_human){
   return(kinase_names)
 }
 
+symbol.site<-function(cleanBCD){
+  #concatenating
+  cleanBCD %<>% unite(geneSymbol_Site, geneSymbol, variableSites, sep="-", remove = TRUE)
+  #removing the last char from cleanBCD
+  cleanBCD$geneSymbol_Site = substr(cleanBCD$geneSymbol_Site,1,nchar(cleanBCD$geneSymbol_Site)-1)
+  return(cleanBCD)
+}
+
 grab_substrates <- function(k, cleanBCD, kinase_human){ 
   #find the substrate and site from kinase_human and store in subs
   substrates <- kinase_human$SubstrateSite[which(k == kinase_human$Kinase)]
@@ -35,7 +43,7 @@ grab_substrates <- function(k, cleanBCD, kinase_human){
   return(pSites)
 }
 
-kinase.correlation<-function(cleanBCD){
+kinase.correlation<-function(cleanData){
   
   kinase_human <- read.clean.KSA()
   
@@ -44,10 +52,11 @@ kinase.correlation<-function(cleanBCD){
   
   #concatenating substrate and site in kinase_human for easy retrieval
   kinase_human %<>% unite(SubstrateSite, Substrate, Site, sep="-", remove = TRUE)
-  cleanBCD %<>% unite(geneSymbol_Site, geneSymbol, variableSites, sep="-", remove = TRUE)
+  cleanBCD <- symbol.site(cleanData)
+  #cleanBCD %<>% unite(geneSymbol_Site, geneSymbol, variableSites, sep="-", remove = TRUE)
   
   #removing the last char from cleanBCD
-  cleanBCD$geneSymbol_Site = substr(cleanBCD$geneSymbol_Site,1,nchar(cleanBCD$geneSymbol_Site)-1)
+  #cleanBCD$geneSymbol_Site = substr(cleanBCD$geneSymbol_Site,1,nchar(cleanBCD$geneSymbol_Site)-1)
   
   vectorS = vector('numeric')
   #For each unique kinase(k is the actual kinase, not an index)
