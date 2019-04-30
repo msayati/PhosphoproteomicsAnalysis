@@ -2,6 +2,13 @@ install_packageIF("ggplot2")
 library(ggplot2)
 
 KSEA <-function(cleanBCD){
+  
+kinase_human <- read.clean.KSA()
+
+cleanBCD %<>% unite(geneSymbol_Site, geneSymbol, variableSites, sep="-", remove = TRUE)
+kinase_human %<>% unite(SubstrateSite, Substrate, Site, sep="-", remove = TRUE)
+cleanBCD$geneSymbol_Site = substr(cleanBCD$geneSymbol_Site,1,nchar(cleanBCD$geneSymbol_Site)-1)
+
 #calculating the average of each row
 FC <- data.frame(cleanBCD[1], Means=rowMeans(cleanBCD[,-1]))
 
@@ -26,7 +33,7 @@ for (k in kinase_names$Kinase){
     commonFC <-logFC$log2FC[indx]
     
     #compute score of Kinase and store it in vector
-    kinase_score = append(kinase_score,((mean(commonFC) - mean(logFC$log2FC))*sqrt(length(subsinexp12)))/sd(logFC$log2FC), after = length(kinase_score))
+    kinase_score = append(kinase_score,((mean(commonFC) - mean(logFC$log2FC))*sqrt(length(kinase_sites)))/sd(logFC$log2FC), after = length(kinase_score))
     
    }
   else {
@@ -56,9 +63,9 @@ top10 <- rbind(top10neg, top10pos)
 return(top10)
 }
 
-testing <- KSEA(cleanBCD)
+#testing <- KSEA(cleanBCD)
 #plotting horizontal histogram
-  ggplot(data=top10, aes(x=Kinase,y=score)) +
-  geom_bar(stat="identity") +
-  scale_x_discrete(limits=datas$Kinase) + 
-  coord_flip() + scale_color_brewer(palette="Paired") + theme_classic()
+  # ggplot(data=top10, aes(x=Kinase,y=score)) +
+  # geom_bar(stat="identity") +
+  # scale_x_discrete(limits=top10$Kinase) + 
+  # coord_flip() + scale_color_brewer(palette="Paired") + theme_classic()

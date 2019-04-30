@@ -8,6 +8,7 @@ source("cleaning.R")
 source("hist_create.R")
 source("kinase_correlation.R")
 source("naive_bayes.R")
+source("KSEA.R")
 
 # Changes shiny limit file upload to 40MB
 options(shiny.maxRequestSize = 100*1024^2)
@@ -148,17 +149,17 @@ server <- function(input, output) {
   observe({print(rawData())})
   
   # Displays current sheet data uploaded onto website (will update if sheet changed)
-  output$contents <- renderTable({
-    # Dataframe stores the uploaded file
-    inFile <- input$file
-    #checks if no file has been uploaded
-    if(is.null(inFile))
-      return(NULL)
-    
-    file.rename(inFile$datapath,
-                paste(inFile$datapath, ".xlsx", sep=""))
-    read_excel(paste(inFile$datapath, ".xlsx", sep=""), currentSheet())
-  })
+  # output$contents <- renderTable({
+  #   # Dataframe stores the uploaded file
+  #   inFile <- input$file
+  #   #checks if no file has been uploaded
+  #   if(is.null(inFile))
+  #     return(NULL)
+  #   
+  #   file.rename(inFile$datapath,
+  #               paste(inFile$datapath, ".xlsx", sep=""))
+  #   read_excel(paste(inFile$datapath, ".xlsx", sep=""), currentSheet())
+  # })
   
   # histogram of correlations of clean data: "Vector A"
   output$corrPlot <- renderPlot({
@@ -228,9 +229,6 @@ server <- function(input, output) {
     # computes correlation with kinase_human.txt & cleandata
     vectorS <- kinase.correlation(cleandata)
     
-    #computes top10
-    top10 <- KSEA(cleandata)
-    
     # naive bayes
     kinase_human <- read.clean.KSA()
     kinase_names <- uniqueK.KSA(kinase_human)
@@ -254,9 +252,10 @@ server <- function(input, output) {
     if (is.null(inFile)) {
       return(NULL)
     }
-     ggplot(data=top10(), aes(x=Kinase,y=score)) +
+    
+     ggplot(top10(), aes(x=Kinase,y=score)) +
      geom_bar(stat="identity") +
-     scale_x_discrete(limits=top10$Kinase) +
+     scale_x_discrete(limits=top10()$Kinase) +
      coord_flip() + scale_color_brewer(palette="Paired") + theme_classic()
    #hist(all_corr(), main="Histogram for Correlation of the Clean Data")
     
