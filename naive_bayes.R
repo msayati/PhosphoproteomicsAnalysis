@@ -29,14 +29,20 @@ final_table <- function(kcorTable, topCount){
   topNTable <- data.frame()
   kColNames <- unlist(rownames(kcorTable))
   
+  
   for(psite in 1:nrow(kcorTable)){
+    #set and name first column
+    topNTable[kColNames[psite], 1] <- rownames(kcorTable)[psite]
+
+    
     tempIndex <- order(kcorTable[psite,], decreasing=TRUE)
     tempRow <- sort(kcorTable[psite,], decreasing=TRUE)
     #grab top N 
     for (i in 1:topCount){
-      topNTable[kColNames[psite], i] <- list(colnames(kcorTable)[tempIndex[i]], tempRow[i])
+      topNTable[kColNames[psite], i+1] <- colnames(kcorTable)[tempIndex[i]]
     }
   }
+  colnames(topNTable) <- c("PhosphoSites")
   
   return(topNTable)
   
