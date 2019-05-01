@@ -33,11 +33,14 @@ randomPlot <- function(dataArray, allCorr, sharedKinaseCorr){
   
   #convert to data frame
   bcors <- data.frame(bcors)
-  names(bcors) <- NULL
+  colnames(bcors) <- c("x")
+  #names(bcors) <- NULL
   allCorr <- data.frame(allCorr)
-  names(allCorr) <- NULL
+  colnames(allCorr) <- c("x")
+  #names(allCorr) <- NULL
   sharedKinaseCorr <- data.frame(sharedKinaseCorr)
-  names(sharedKinaseCorr) <- NULL
+  colnames(sharedKinaseCorr) <- c("x")
+  #names(sharedKinaseCorr) <- NULL
   
   
   #set where data is from
@@ -49,10 +52,11 @@ randomPlot <- function(dataArray, allCorr, sharedKinaseCorr){
   allLengths <- rbind(bcors, allCorr)
   allLengths <- rbind(allLengths, sharedKinaseCorr)
   
+  print(allLengths)
   
   #normalize y axis
   
-  ggplot(allLengths, aes(length, fill = from)) + geom_density(alpha = 0.2)
+  ggplot(allLengths, aes(x = x, fill = from)) + geom_density(col=NA, alpha = 0.2)
   #plot correlation values
   
   #plot all pairs/shared-kinase pairs/randomized al pairs
