@@ -42,7 +42,8 @@ final_table <- function(kcorTable, topCount){
       topNTable[kColNames[psite], i+1] <- colnames(kcorTable)[tempIndex[i]]
     }
   }
-  colnames(topNTable) <- c("PhosphoSites")
+  x <- 1:topCount
+  colnames(topNTable) <- c("PhosphoSites", x)
   
   return(topNTable)
   
