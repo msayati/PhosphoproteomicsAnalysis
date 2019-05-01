@@ -196,7 +196,7 @@ server <- function(input, output) {
       return(NULL)
     }
     
-    hist(vectorS(), main="Histogram for Correlation of the Kinase_human.txt")
+    hist(vectorS(), main="Histogram for Correlation of Shared Substrates")
   })
   
   output$downloadH2 <- downloadHandler(
@@ -220,22 +220,10 @@ server <- function(input, output) {
       return(NULL)
     }
     
-    #cleans the given data
-    cleandata <- clean.bcd(rawData(), currentSheet(), currentThreshold())
-    
-    # computes correlation & contains upper triangle of corr (stored in dataframe)
-    all_corr <- all_paircorr(cleandata)
-    
-    # computes correlation with kinase_human.txt & cleandata
-    vectorS <- kinase.correlation(cleandata)
-    
-    # naive bayes
-    kinase_human <- read.clean.KSA()
-    kinase_names <- uniqueK.KSA(kinase_human)
-    nb <- naive_bayes(vectorS, all_corr, currentTPNI(), test=TRUE, cleandata, kinase_names, kinase_human)
+    nb <- naive_bayes(vectorS(), all_corr(), currentTPNI(), test=TRUE, cleandata())
     
     # displays table
-    #nb[[2]]
+    nb[[2]]
   })
   
   # a table
