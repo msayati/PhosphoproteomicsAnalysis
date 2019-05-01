@@ -45,17 +45,12 @@ for (k in kinase_names$Kinase){
 #creating dataframe with kinase name and their respective score
 kscore1 <- data.frame(kinase_names[1], score = kinase_score)
 
-#splitting kscore1 into negative and positive score
-neg <- kscore1[which(kscore1$score < 0),]
-pos <- kscore1[which(kscore1$score > 0),]
-
-#ordering neg in descending order and pos in ascending
-neg <- neg[with(neg, order(score, decreasing = TRUE)),]
-pos <- pos[with(pos, order(score)),]
+#ordering in ascending
+kscore1 <- kscore1[with(kscore1, order(score)),]
 
 #getting the top 10 of neg and top 10 of pos
-top10neg <- neg[10:1,]
-top10pos <- pos[1:10,]
+top10pos <- tail(kscore1, 10) #kscore1[10:1,]
+top10neg <- head(kscore1, 10) #kscore1[1:10,]
 
 #combining the top 10 for graph
 top10 <- rbind(top10neg, top10pos)
@@ -67,5 +62,5 @@ return(top10)
 #plotting horizontal histogram
   # ggplot(data=top10, aes(x=Kinase,y=score)) +
   # geom_bar(stat="identity") +
-  # scale_x_discrete(limits=top10$Kinase) + 
+  # scale_x_discrete(limits=top10$Kinase) +
   # coord_flip() + scale_color_brewer(palette="Paired") + theme_classic()
