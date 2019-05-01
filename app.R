@@ -71,11 +71,10 @@ ui <- fluidPage(
                  plotOutput(outputId = "kinasecPlot"), downloadButton("downloadH2", "Download")),
         
         # displays a table with the desired top predictions
-        tabPanel("Predictions", tableOutput("topPredTable")),
+        tabPanel("CoPhosK Predictions", tableOutput("topPredTable")),
         
-        tabPanel("Cophosk+", tableOutput("cplus")),
-        
-        tabPanel("KSEA", plotOutput(outputId = "ksea"))
+        # displays KSEA plot
+        tabPanel("KSEA", plotOutput(outputId = "ksea"), downloadButton("downloadKSEA", "Download"))
       )
       
     )
@@ -149,17 +148,17 @@ server <- function(input, output) {
   observe({print(rawData())})
   
   # Displays current sheet data uploaded onto website (will update if sheet changed)
-  # output$contents <- renderTable({
-  #   # Dataframe stores the uploaded file
-  #   inFile <- input$file
-  #   #checks if no file has been uploaded
-  #   if(is.null(inFile))
-  #     return(NULL)
-  #   
-  #   file.rename(inFile$datapath,
-  #               paste(inFile$datapath, ".xlsx", sep=""))
-  #   read_excel(paste(inFile$datapath, ".xlsx", sep=""), currentSheet())
-  # })
+  output$contents <- renderTable({
+    # Dataframe stores the uploaded file
+    inFile <- input$file
+    #checks if no file has been uploaded
+    if(is.null(inFile))
+      return(NULL)
+
+    file.rename(inFile$datapath,
+                paste(inFile$datapath, ".xlsx", sep=""))
+    read_excel(paste(inFile$datapath, ".xlsx", sep=""), currentSheet())
+  })
   
   # histogram of correlations of clean data: "Vector A"
   output$corrPlot <- renderPlot({
@@ -226,11 +225,6 @@ server <- function(input, output) {
     nb[[2]]
   })
   
-  # a table
-  output$cplus <- renderTable({
-    
-  })
-  
   # a histogram
   output$ksea <- renderPlot({
     inFile <- input$file
@@ -245,9 +239,18 @@ server <- function(input, output) {
      geom_bar(stat="identity") +
      scale_x_discrete(limits=top10()$Kinase) +
      coord_flip() + scale_color_brewer(palette="Paired") + theme_classic()
-   #hist(all_corr(), main="Histogram for Correlation of the Clean Data")
-    
   })
+  
+  # download KSEA plot
+  output$downloadKSEA <- downloadHandler(
+    filename = function() { paste("ksea", '.png', sep='') },
+    content = function(file) {
+      ggsave(file,ggplot(top10(), aes(x=Kinase,y=score)) +
+               geom_bar(stat="identity") +
+               scale_x_discrete(limits=top10()$Kinase) +
+               coord_flip() + scale_color_brewer(palette="Paired") + theme_classic())
+    }
+  )
 }
 
 # Run the application 
