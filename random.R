@@ -56,16 +56,3 @@ randomPlot <- function(dataArray, allCorr, sharedKinaseCorr){
 
 }
 
-realOne = sample(1:20, 8, replace=F) 
-realTwo = sample(1:20, 8, replace=F)
-realThree = sample(1:20, 8, replace=F)
-realFour = sample(1:20, 8, replace=F)
-
-data = data.frame(one = realOne, two = realTwo, three = realThree, four = realFour)
-alls = c(-0.2, 0.8, 0.9)
-shared = c(0.9, 0.1, 0.1)
-
-
-
-print(data)
-randomPlot(data, alls, shared)
