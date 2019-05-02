@@ -9,6 +9,7 @@ source("hist_create.R")
 source("kinase_correlation.R")
 source("naive_bayes.R")
 source("KSEA.R")
+source("random.R")
 
 # Changes shiny limit file upload to 40MB
 options(shiny.maxRequestSize = 100*1024^2)
