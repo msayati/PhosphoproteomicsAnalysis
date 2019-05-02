@@ -68,7 +68,7 @@ ui <- fluidPage(
         
         # displays histogram of correlations
         tabPanel("Co-phosphorylation", plotOutput(outputId = "corrPlot"), downloadButton("downloadH1", "Download"), br(),
-                 plotOutput(outputId = "kinasecPlot"), downloadButton("downloadH2", "Download")),
+                 plotOutput(outputId = "kinasecPlot"), downloadButton("downloadH2", "Download"), br(), plotOutput(outputId = "RandPlot")),
         
         # displays a table with the desired top predictions
         tabPanel("CoPhosK Predictions", tableOutput("topPredTable")),
@@ -141,6 +141,19 @@ server <- function(input, output) {
     
     KSEA(cleandata())
   })
+  
+  allLengths <- reactive({
+    inFile <- input$file
+    print(inFile, digits = NULL,
+          quote = FALSE, right = TRUE, row.names = FALSE, max = NULL)
+    # if no file has been uploaded (to avoid bugs)
+    if (is.null(inFile)) {
+      return(NULL)
+    }
+    
+    randomPlot(cleandata(), all_corr(), vectorS())
+  })
+  
   # reactive inputs must be wrapped in a render function
   observe({print(input$sheet)})
   observe({print(input$threshold)})
@@ -170,7 +183,7 @@ server <- function(input, output) {
       return(NULL)
     }
     
-    hist(all_corr(), main="Histogram for Correlation of the Clean Data")
+    hist(all_corr(), main="Histogram for Correlation of All Kinases")
   })
   
   #filename and type will not display properly in RStudio, but it will in browsers
@@ -180,7 +193,7 @@ server <- function(input, output) {
     },
     content = function(filename) {
       png(filename)
-      hist(all_corr(), main="Histogram for Correlation of the Clean Data")
+      hist(all_corr(), main="Histogram for Correlation of All Kinases")
       dev.off()
     }
   )
@@ -204,10 +217,25 @@ server <- function(input, output) {
     },
     content = function(filename) {
       png(filename)
-      hist(vectorS(), main="Histogram for Correlation of the Clean Data")
+      hist(vectorS(), main="Histogram for Correlation of Shared Substrates")
       dev.off()
     }
   )
+  
+  # histogram from 3 plots
+  output$RandPlot <- renderPlot({
+    inFile <- input$file
+    print(inFile, digits = NULL,
+          quote = FALSE, right = TRUE, row.names = FALSE, max = NULL)
+    # if no file has been uploaded (to avoid bugs)
+    if (is.null(inFile)) {
+      return(NULL)
+    }
+    
+    ggplot(allLengths(), aes(x = x, fill = from)) + 
+      geom_density(col=NA, alpha = 0.2) + 
+      labs(title="CoPhosphorylation Distribution", x ="CoPhos",  y = "Frequency")
+  })
   
   # Displays current sheet data uploaded onto website (will update if sheet changed)
   output$topPredTable <- renderTable({

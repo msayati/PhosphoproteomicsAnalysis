@@ -52,7 +52,6 @@ randomPlot <- function(dataArray, allCorr, sharedKinaseCorr){
   allLengths <- rbind(bcors, allCorr)
   allLengths <- rbind(allLengths, sharedKinaseCorr)
   
-  ggplot(allLengths, aes(x = x, fill = from)) + geom_density(col=NA, alpha = 0.2) + labs(title="CoPhosphorylation Distribution", x ="CoPhos",  y = "Frequency")
-
+  return(allLengths)
 }
 
