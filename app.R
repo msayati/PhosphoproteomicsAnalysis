@@ -68,7 +68,8 @@ ui <- fluidPage(
         
         # displays histogram of correlations
         tabPanel("Co-phosphorylation", plotOutput(outputId = "corrPlot"), downloadButton("downloadH1", "Download"), br(),
-                 plotOutput(outputId = "kinasecPlot"), downloadButton("downloadH2", "Download"), br(), plotOutput(outputId = "RandPlot")),
+                 plotOutput(outputId = "kinasecPlot"), downloadButton("downloadH2", "Download"), br(), 
+                 plotOutput(outputId = "RandPlot"), downloadButton("downloadRAND", "Download"), br()),
         
         # displays a table with the desired top predictions
         tabPanel("CoPhosK Predictions", tableOutput("topPredTable")),
@@ -237,6 +238,15 @@ server <- function(input, output) {
       labs(title="CoPhosphorylation Distribution", x ="CoPhos",  y = "Frequency")
   })
   
+  # download Rand plot
+  output$downloadRAND <- downloadHandler(
+    filename = function() { paste("dist", '.png', sep='') },
+    content = function(file) {
+      ggsave(file,ggplot(allLengths(), aes(x = x, fill = from)) + 
+               geom_density(col=NA, alpha = 0.2) + 
+               labs(title="CoPhosphorylation Distribution", x ="CoPhos",  y = "Frequency"))
+    }
+  )
   # Displays current sheet data uploaded onto website (will update if sheet changed)
   output$topPredTable <- renderTable({
     inFile <- input$file
