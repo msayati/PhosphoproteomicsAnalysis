@@ -5,6 +5,15 @@ install_packageIF("WGCNA")
 #source("http://bioconductor.org/biocLite.R") 
 #biocLite(c("GO.db", "preprocessCore", "impute"))
 
+#If the code on top doesn't work try and you keep getting biocLite error:
+
+#BiocManager::install()  
+
+#Installs missing packages if they are missing
+
+install_packageIF("RSQLite")
+install_packageIF("matrixStats")
+
 library(WGCNA)
 
 all_paircorr <- function(cbcd){
