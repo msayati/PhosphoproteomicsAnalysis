@@ -258,7 +258,7 @@ server <- function(input, output) {
       return(NULL)
     }
     
-    nb <- naive_bayes(vectorS(), all_corr(), currentTPNI(), test=TRUE, cleandata())
+    nb <- naive_bayes(vectorS(), all_corr(), currentTPNI(), test=FALSE, cleandata())
     
     # displays table
     nb[[2]]
