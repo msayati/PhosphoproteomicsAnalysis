@@ -50,7 +50,7 @@ naive_bayess <- function(S, A, topCount, test=FAlSE, cleanData, kinase_names, ki
   
   #initiate cluster
   cl <- makeCluster(cores)
-  registerDoSNOW(cl)
+  registerDoParallel(cl)
   
   #adding packages for parallel clusters
   clusterEvalQ(cl, library("WGCNA"))
@@ -83,7 +83,7 @@ naive_bayess <- function(S, A, topCount, test=FAlSE, cleanData, kinase_names, ki
     index <- 0
     #for(k in kinase_names$Kinase){
     print("before foreach ")
-    foreach(i=1:length(kinase_names$Kinase), .packages = c("foreach", "WGCNA", "magrittr")) %dopar% {
+    foreach(i=1:length(kinase_names$Kinase), .combine = c) %dopar% {
       print("after foreach")
       source("cleaning.R")
       source("kinase_correlation.R")

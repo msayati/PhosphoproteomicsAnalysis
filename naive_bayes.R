@@ -125,6 +125,9 @@ naive_bayes <- function(S, A, topCount, test=FAlSE, cleanBCD){
 } 
 
 
+S <- c(.2, .2, .4, .6, .8)
+A <- c(.9, .9, .5, .5, .8, .1, .2, .9, .9, .9, .4)
+tes<-naive_bayes(S, A, 5, test=TRUE, cleanBCD)
 
 
 

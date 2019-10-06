@@ -42,5 +42,5 @@ clean.bcd<-function(bcd, sh, threshold){
 }
 
 # Code to test working function:
-# file <- "data/BreastCancerData.xlsx"
-# cleanBCD <- clean.bcd(file, 2, .40)
+file <- "data/BreastCancerDatatest.xlsx"
+cleanBCD <- clean.bcd(file, 2, .40)
