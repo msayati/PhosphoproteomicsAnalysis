@@ -19,10 +19,10 @@ library(readxl)
 clean.bcd<-function(bcd, sh, threshold){
   
   #reads in excel file
-  #BreastCancerData1 <- read_excel(bcd, sheet = as.numeric(sh))
+  BreastCancerData1 <- read_excel(bcd, sheet = as.numeric(sh))
   
   #converts it into csv file
-  write.csv(bcd, "data/BreastCancerData.csv", row.names=FALSE)
+  write.csv( BreastCancerData1, "data/BreastCancerData.csv", row.names=FALSE)
   
   #reads in csv file
   BreastCancerData1 <- read.csv("data/BreastCancerData.csv")
@@ -42,5 +42,5 @@ clean.bcd<-function(bcd, sh, threshold){
 }
 
 # Code to test working function:
-file <- "data/BreastCancerDatatest.xlsx"
+file <- "data/BreastCancerData.xlsx"
 cleanBCD <- clean.bcd(file, 2, .40)
