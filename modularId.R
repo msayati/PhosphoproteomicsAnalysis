@@ -6,20 +6,50 @@ library(readxl)
 library(cluster)
 
 allowWGCNAThreads()
+options(stringsAsFactors = TRUE)
 
 #This script will creates modules using the WGCNA package
 
-#Read data from the file. Evenually this will be modulize and will be pass through a function from the app.R script
+#The following fuction receives the dataset and creates 
+#network using WGCNA
 
-breastCancerData <- read_excel("data/BreastCancerData.xlsx", sheet=2)
+networkAnalysis <- function(Data){
 
-#Send the data to be cleaned and store in cleanData
+#Remove Excess labels
 
-cleanData <- clean.bcd(breastCancerData,5,2)
+breastCancerData <- read_excel("data/BreastCancerDatatest2.xlsx", sheet=2)
+data<-clean.bcd(breastCancerData,2,5)
+  
+data[1]<-NULL #do you want them to labels by site or gene
 
-# Choose a set of soft-thresholding powers for weighted network
+#Transpose data
 
-powers = c(c(1:10), seq(from = 12, to=20, by=2))
+cleanData<-t(data)
 
-sft = pickSoftThreshold(cleanData, dataIsExpr = TRUE, powerVector = powers, verbose = 5)
+#Set Column Names to Site 
+#We can have one label for column and one for rows, but having trouble setting up
 
+#Modular Identification
+
+net = blockwiseModules(cleanData, power = 3,
+                       TOMType = "unsigned", minModuleSize = 10,
+                       reassignThreshold = 0, mergeCutHeight = 0.25,
+                       numericLabels = TRUE, pamRespectsDendro = FALSE,
+                       saveTOMs = FALSE,
+                       saveTOMFileBase = "BreastCancerTOM",
+                       verbose = 3)
+
+#Run to see what index is assigned what module
+net$colors
+
+#Run to see colors and table
+
+mergedColors = labels2colors(net$colors)
+# Plot the dendrogram and the module colors underneath
+plotDendroAndColors(net$dendrograms[[1]], mergedColors[net$blockGenes[[1]]],
+                    "Module colors",
+                    dendroLabels = FALSE, hang = 0.03,
+                    addGuide = TRUE, guideHang = 0.05)
+
+return(net)
+}
