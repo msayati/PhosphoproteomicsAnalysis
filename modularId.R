@@ -19,7 +19,10 @@ networkAnalysis <- function(data){
   
 #Remove Excess labels
   
-data[1]<-NULL #do you want them to labels by site or gene
+#data[1]<-NULL #do you want them to labels by site or gene
+
+data <- data[,-(1:2)]             
+data <- data[,-(1:2),drop=FALSE]
 
 #Transpose data
 
