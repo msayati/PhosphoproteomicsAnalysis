@@ -13,12 +13,11 @@ options(stringsAsFactors = TRUE)
 #The following fuction receives the dataset and creates 
 #network using WGCNA
 
-networkAnalysis <- function(Data){
+#data is a dataframe that has been cleaned by clean BCD
 
+networkAnalysis <- function(data){
+  
 #Remove Excess labels
-
-breastCancerData <- read_excel("data/BreastCancerDatatest2.xlsx", sheet=2)
-data<-clean.bcd(breastCancerData,2,5)
   
 data[1]<-NULL #do you want them to labels by site or gene
 
