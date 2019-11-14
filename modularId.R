@@ -13,16 +13,18 @@ options(stringsAsFactors = TRUE)
 #The following fuction receives the dataset and creates 
 #network using WGCNA
 
-#data is a dataframe that has been cleaned by clean BCD
+#networkAnalysis <- function(Data){
 
-networkAnalysis <- function(data){
-  
 #Remove Excess labels
+
+breastCancerData <- read_excel("data/BreastCancerData.xlsx", sheet=2)
+data<-clean.bcd(breastCancerData,2,5)
   
 #data[1]<-NULL #do you want them to labels by site or gene
 
-data <- data[,-(1:2)]             
+data <- data[,-(1:2)]             # vector
 data <- data[,-(1:2),drop=FALSE]
+
 
 #Transpose data
 
@@ -31,27 +33,41 @@ cleanData<-t(data)
 #Set Column Names to Site 
 #We can have one label for column and one for rows, but having trouble setting up
 
+
+#Pick softthreshold for data
+
+
+sft = pickSoftThreshold(cleanData, powerVector = c(seq(1, 10, by = 1)), verbose = 5)
+
 #Modular Identification
 
-net = blockwiseModules(cleanData, power = 3,
-                       TOMType = "unsigned", minModuleSize = 10,
+net = blockwiseModules(cleanData, power = 5,
+                       TOMType = "unsigned", minModuleSize = 30,
                        reassignThreshold = 0, mergeCutHeight = 0.25,
                        numericLabels = TRUE, pamRespectsDendro = FALSE,
-                       saveTOMs = FALSE,
+                       saveTOMs = TRUE,
                        saveTOMFileBase = "BreastCancerTOM",
                        verbose = 3)
 
-#Run to see what index is assigned what module
-net$colors
+mergedColors=net$colors
 
-#Run to see colors and table
+moduleColors = labels2colors(net$colors)
 
-mergedColors = labels2colors(net$colors)
-# Plot the dendrogram and the module colors underneath
-plotDendroAndColors(net$dendrograms[[1]], mergedColors[net$blockGenes[[1]]],
-                    "Module colors",
-                    dendroLabels = FALSE, hang = 0.03,
-                    addGuide = TRUE, guideHang = 0.05)
+mergedColors <- t(mergedColors)
 
-return(net)
+max(mergedColors)
+
+index=max(mergedColors)
+
+size<-vector()
+
+for (i in 1:index){
+  
+  print(paste0("Module: ", i))
+  num<-length(which(mergedColors==i ))
+  size[c(i)]<-num
+  print(num)
+  
 }
+
+hist(size)
