@@ -174,8 +174,7 @@ for (i in 1:30)
 }
 
 #Convert martix to data frame. All rows must have same num of columns so some columns will be equal to zero
-#You can access specific columns by $V1-V30. If needed use t() to trapose
-
+  
 network <- as.data.frame(mat)
 network[is.na(network)] <- 0
 
