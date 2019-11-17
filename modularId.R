@@ -149,8 +149,9 @@ indexModule <-c(8,7,2,9,9,9,9,14,22,14,22,5,1,1,15,1,
                 6,19,19,29,12,19,19,6,12,29,6,12,12,6,12,12,12)
 
 #create an empty martix
+#create an empty martix
 
-mat <-matrix(, nrow=index,ncol=20)
+mat <-matrix(, nrow=20,ncol=30)
 
 k=0 #counter
 
@@ -162,7 +163,7 @@ for (i in 1:30)
   {
     if(indexModule[j]==i)
     {
-      mat[i,k]=index2[j]
+      mat[k,i]=index2[j]
       k=k+1
     }
     
@@ -177,6 +178,10 @@ for (i in 1:30)
 
 network <- as.data.frame(mat)
 network[is.na(network)] <- 0
+
+#You can use this to view a specific module
+
+network$V1
 
 return(network)
 }
