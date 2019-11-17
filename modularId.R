@@ -178,5 +178,5 @@ for (i in 1:30)
 network <- as.data.frame(mat)
 network[is.na(network)] <- 0
 
-return(net)
+return(network)
 }
