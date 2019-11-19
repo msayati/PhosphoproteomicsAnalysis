@@ -21,98 +21,98 @@ networkAnalysis <- function(Data){
   
 #Reads file and returns a data frame
 
-breastCancerData <- read_excel("data/BreastCancerDatatest(merged).xlsx", sheet=2)
+#breastCancerData <- read_excel("data/BreastCancerDatatest(merged).xlsx", sheet=2)
 
 #Removes columns labels since the the package gets an error with strings. Need to convert to proper labels
 
-breastCancerData<-breastCancerData[,-(1:3)]
+#breastCancerData<-breastCancerData[,-(1:3)]
 
-data<-clean.bcd(breastCancerData,2,5)
+#data<-clean.bcd(breastCancerData,2,5)
 
 #Trapose the data since packages needs to read genes as columns and samples as rowsa
 
-data<-t(data)
+#data<-t(data)
 
-cleanData<-data
+#cleanData<-data
 
 
 #Pick softthreshold for data
 
-sft = pickSoftThreshold(cleanData, powerVector = c(seq(1, 10, by = 1)), verbose = 5)
+#sft = pickSoftThreshold(cleanData, powerVector = c(seq(1, 10, by = 1)), verbose = 5)
 
 #Check if soft threshold is a valid entry. If the data too small it may return NA. If it returns Na set the threhold to 5
 #If data is too small then set min module to zero. Otherwise default is 30
 
-sft= sft$powerEstimate
+#sft= sft$powerEstimate
 
-minModule=30
+#minModule=30
 
-if (is.na(sft))
-{
-  sft=5
-  minModule=0
+#if (is.na(sft))
+#{
+  #sft=5
+  #minModule=0
   
-}
+#}
 
 #Modular Identification
 
-net = blockwiseModules(cleanData, power = sft,
-                       TOMType = "unsigned", minModuleSize = minModule,
-                       reassignThreshold = 0, mergeCutHeight = 0.25,
-                       numericLabels = TRUE, pamRespectsDendro = FALSE,
-                       saveTOMs = TRUE,
-                       saveTOMFileBase = "BreastCancerTOM",
-                       verbose = 3)
+#net = blockwiseModules(cleanData, power = sft,
+                       #TOMType = "unsigned", minModuleSize = minModule,
+                       #reassignThreshold = 0, mergeCutHeight = 0.25,
+                       #numericLabels = TRUE, pamRespectsDendro = FALSE,
+                       #saveTOMs = TRUE,
+                       #saveTOMFileBase = "BreastCancerTOM",
+                       #verbose = 3)
 
 #This vector gives us both index and module number
 
-mergedColors<-net$colors
+#mergedColors<-net$colors
 
 #moduleColors shows us the colors each index represents
 
-moduleColors = labels2colors(net$colors)
+#moduleColors = labels2colors(net$colors)
 
 #Gives us the amount of modules in mergedColors
 
-index=max(mergedColors)
+#index=max(mergedColors)
 
 #need to declare size as a vector before using it
 
-size<-vector()
+#size<-vector()
 
 #This loop shows us the amount of indexes in each module
 
-for (i in 1:index){
+#for (i in 1:index){
   
-  print(paste0("Module: ", i))
-  num<-length(which(mergedColors==i ))
-  size[c(i)]<-num
-  print(num)
-}
+  #print(paste0("Module: ", i))
+  #num<-length(which(mergedColors==i ))
+  #size[c(i)]<-num
+  #print(num)
+#}
 
-count=0
+#count=0
 
 #This vector will have all the modular indexes in order. For example all indexes that belong in module one will show up first
 #then those on module 2
 
-modulesInOrder<-vector()
+#modulesInOrder<-vector()
 
 #Issues: modules in order should only be the vector indexes, but it shows both 
 #array indexes and module number
 
-for (i in 1:length(mergedColors)){
+#for (i in 1:length(mergedColors)){
 
-  for (j in 1:length(mergedColors)){
-    if(module[j]==i)
-    {
-      modulesInOrder[count]<-mergedColors[i]
-      print(mergedColors[j])
-      count=count+1
-    }
-}
-}
+  #for (j in 1:length(mergedColors)){
+    #if(module[j]==i)
+    #{
+      #modulesInOrder[count]<-mergedColors[i]
+      #print(mergedColors[j])
+      #count=count+1
+    #}
+#}
+#}
 
-modulesInOrder
+#modulesInOrder
 
 #hist(size)
 
