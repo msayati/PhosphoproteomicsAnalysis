@@ -10,6 +10,7 @@ source("kinase_correlation.R")
 source("naive_bayes.R")
 source("KSEA.R")
 source("random.R")
+source("modularId.R")
 
 # Changes shiny limit file upload to 40MB
 options(shiny.maxRequestSize = 100*1024^2)
@@ -77,6 +78,9 @@ ui <- fluidPage(
         
         # displays KSEA plot
         tabPanel("KSEA", plotOutput(outputId = "ksea"), downloadButton("downloadKSEA", "Download"))
+        
+        #displays Module Identification
+        #tabPanel("Modular Identification Visualization", )
       )
       
     )
@@ -290,6 +294,37 @@ server <- function(input, output) {
                coord_flip() + scale_color_brewer(palette="Paired") + theme_classic())
     }
   )
+  
+  # # modular identification plot
+  # output$modularIdentPlot <- renderPlot({
+  #   inFile <- input$file
+  #   print(inFile, digits = NULL,
+  #         quote = FALSE, right = TRUE, row.names = FALSE, max = NULL)
+  #   # if no file has been uploaded (to avoid bugs)
+  #   if (is.null(inFile)) {
+  #     return(NULL)
+  #   }
+  #   
+  #  
+  #   
+  #   # calling the modularID function
+  #   file <- read_excel("data/BreastCancerDatatest(merged).xlsx", sheet=2)
+  #   example <- networkAnalysis(file)
+  #   #reading down, from top of row to bottom
+  #   
+  #   as.data.frame( example[1,], drop=false)
+  #   
+  #   #transposing
+  #   data <-t(example)
+  #   
+  #   total_rows <- nrows(example)
+  #   print(total_rows)
+  # })
+  
+  #download Modular Identification Plot
+  #output$downloadKSEA <- downloadHandler(
+    #filename = function() { past}
+  #)
 }
 
 # Run the application 
