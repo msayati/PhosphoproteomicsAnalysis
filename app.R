@@ -11,6 +11,7 @@ source("naive_bayes.R")
 source("KSEA.R")
 source("random.R")
 source("modularId.R")
+source("modularVisualization.R")
 
 # Changes shiny limit file upload to 40MB
 options(shiny.maxRequestSize = 100*1024^2)
@@ -158,6 +159,11 @@ server <- function(input, output) {
     }
     
     randomPlot(cleandata(), all_corr(), vectorS())
+    
+  #create a reactive for the modularVisualization
+  # calls the function in modularId
+  # calls the function in modularvisualization
+    
   })
   
   # reactive inputs must be wrapped in a render function
@@ -295,36 +301,31 @@ server <- function(input, output) {
     }
   )
   
-  # # modular identification plot
-  # output$modularIdentPlot <- renderPlot({
-  #   inFile <- input$file
-  #   print(inFile, digits = NULL,
-  #         quote = FALSE, right = TRUE, row.names = FALSE, max = NULL)
-  #   # if no file has been uploaded (to avoid bugs)
-  #   if (is.null(inFile)) {
-  #     return(NULL)
-  #   }
-  #   
-  #  
-  #   
-  #   # calling the modularID function
-  #   file <- read_excel("data/BreastCancerDatatest(merged).xlsx", sheet=2)
-  #   example <- networkAnalysis(file)
-  #   #reading down, from top of row to bottom
-  #   
-  #   as.data.frame( example[1,], drop=false)
-  #   
-  #   #transposing
-  #   data <-t(example)
-  #   
-  #   total_rows <- nrows(example)
-  #   print(total_rows)
-  # })
-  
+   # modular identification plot
+   output$modularIdentPlot <- renderPlot({
+     inFile <- input$file
+     print(inFile, digits = NULL,
+           quote = FALSE, right = TRUE, row.names = FALSE, max = NULL)
+     # if no file has been uploaded (to avoid bugs)
+     if (is.null(inFile)) {
+       return(NULL)
+     }
+     file <- read_excel("data/BreastCancerDatatest(merged).xlsx", sheet=2)
+     workingFile <- networkAnalysis(file) #file should be inFile
+     example(workingFile)
+
+     #reading down, from top of row to bottom
+     #as.data.frame( example[1,], drop=false)
+    
+    for (i in 1:length(workingFile$V1)){
+      
+    }
+   })
+
   #download Modular Identification Plot
-  #output$downloadKSEA <- downloadHandler(
+  output$downloadKSEA <- downloadHandler(
     #filename = function() { past}
-  #)
+  )
 }
 
 # Run the application 

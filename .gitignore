@@ -73,3 +73,4 @@ yarn-debug.log*
 .RData
 BreastCancerData.csv
 test.xlsx
+.Rproj.user
