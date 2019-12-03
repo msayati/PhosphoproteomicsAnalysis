@@ -34,7 +34,6 @@ geneList<-geneList %>% pull(geneSymbol)
 
 geneNum <-length(geneList)
 
-
 #Remove Labels From Data
 
 Data<-Data[,-(1:3)]
@@ -42,7 +41,6 @@ Data<-Data[,-(1:3)]
 #Trapose the data since packages needs to read genes as columns and samples as rowsa
 
 Data<-t(Data)
-
 
 #Pick softthreshold for data
 
@@ -72,19 +70,19 @@ net = blockwiseModules(Data, power = sft,
                        saveTOMFileBase = "BreastCancerTOM",
                        verbose = 3)
 
-#This vector gives us the module number
+#This vector gives us the module number each gene belongs to
 
-mergedColors<-net$colors
+moduleList<-net$colors
 
-#Create an index that holds number of modules in mergedColors
+#Create an index that holds number of modules in moduleList
 
-col=max(mergedColors)
+col=max(moduleList)
 
-#Loop through mergedColors to get the size of each module
+#Loop through moduleList to get the size of each module
 
 for (i in 1:col)
 {
-  num<-length(which(mergedColors==i ))
+  num<-length(which(moduleList==i ))
   size[c(i)]<-num
 }
 
@@ -104,7 +102,7 @@ for (i in 1:col)
 {
   for (j in 1:geneNum)
   {
-    if(mergedColors[j]==i)
+    if(moduleList[j]==i)
     {
       mat[k,i]=geneList[j]
       k=k+1
