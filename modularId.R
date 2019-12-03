@@ -176,9 +176,23 @@ network <- as.data.frame(mat)
 #Doesn't work with string. So there is NA instead of zeros.
 #network[is.na(network)] <- 0
 
-#You can use this to view a specific module
+#Create a label vector
 
-network$V1
+moduleLabel <-vector()
+
+#Get module label
+
+for (i in 1:index)
+{
+  moduleLabel[i] <- paste("Module",i)
+  print(moduleLabel[i])
+}
+
+#Set model label
+
+names(network)<-moduleLabel
+
+network$`Module 1`
 
 return(network)
 }
