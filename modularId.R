@@ -14,7 +14,9 @@ options(stringsAsFactors = FALSE)
 
 #This script will creates modules using the WGCNA package
 
-#The following fuction receives a clean excel file in the form of a dataframe. 
+#The following fuction receives a clean excel file in the form of a dataframe.  
+
+#Function will fail if data is not cleaned by the bcd function
 
 networkAnalysis <- function(Data){
   
