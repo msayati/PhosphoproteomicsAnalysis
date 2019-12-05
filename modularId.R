@@ -79,6 +79,8 @@ moduleList<-net$colors
 col=max(moduleList)
 
 #Loop through moduleList to get the size of each module
+  
+size <-vector()
 
 for (i in 1:col)
 {
