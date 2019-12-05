@@ -28,7 +28,7 @@ Data <- Data[,-(2)]
 
 #Save the gene and variable site in vector for later use
 
-geneList <- as_tibble(data)
+geneList <- as_tibble(Data)
 
 geneList<-geneList %>% pull(geneSymbol)
 
