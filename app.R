@@ -2,6 +2,7 @@
 library(shiny)
 library(readxl)
 library(ggplot2)
+library(visNetwork)
 
 # Required R Scripts
 source("cleaning.R")
@@ -13,12 +14,13 @@ source("random.R")
 source("modularId.R")
 source("modularVisualization.R")
 
+
 # Changes shiny limit file upload to 40MB
 options(shiny.maxRequestSize = 100*1024^2)
 
 # UI for app
 ui <- fluidPage(
-   
+  
   # App title
   titlePanel("Phosphoproteomics Analysis"),
   
@@ -37,19 +39,19 @@ ui <- fluidPage(
       
       # user can choose a sheet location number
       tags$div(title="Sheet: sheet number where the data is located.",
-        numericInput("sheet", "Sheet", 1, min = 1, max = 100)
+               numericInput("sheet", "Sheet", 1, min = 1, max = 100)
       ),
       
       # when user hovers over this area, text will appear
       tags$div(title="Missing Information Limit: percentage of NA data in columns that will be ignored (threshold). Ex. 40%, will compute correlations with columns that have less than 40% NA.",
-        # user can choose a threshold number
-        numericInput("threshold", "Missing Information Limit", 40, min = 1, max = 100)
+               # user can choose a threshold number
+               numericInput("threshold", "Missing Information Limit", 40, min = 1, max = 100)
       ),
       
       # user can select (max) the top 5 predictions
       tags$div(title="Top Prediction(s): number of predictions to be calculated.",
-        selectInput("topPredcitionNumInput", "Top Prediction(s)",
-                    choices = c("5", "1", "2", "3", "4"))
+               selectInput("topPredcitionNumInput", "Top Prediction(s)",
+                           choices = c("5", "1", "2", "3", "4"))
       ),
       
       hr(),
@@ -78,11 +80,12 @@ ui <- fluidPage(
         tabPanel("CoPhosK Predictions", tableOutput("topPredTable")),
         
         # displays KSEA plot
-        tabPanel("KSEA", plotOutput(outputId = "ksea"), downloadButton("downloadKSEA", "Download"))
+        tabPanel("KSEA", plotOutput(outputId = "ksea"), downloadButton("downloadKSEA", "Download")),
         
         #displays Module Identification
-        #tabPanel("Modular Identification Visualization", )
-      )
+        tabPanel("Modular Identification Visualization", visNetworkOutput("modularVisualPlot")), downloadButton("downloadModularVisual", "Download")
+      
+      )#, downloadButton("downloadModularVisual", "Download")
       
     )
   )
@@ -160,10 +163,6 @@ server <- function(input, output) {
     
     randomPlot(cleandata(), all_corr(), vectorS())
     
-  #create a reactive for the modularVisualization
-  # calls the function in modularId
-  # calls the function in modularvisualization
-    
   })
   
   # reactive inputs must be wrapped in a render function
@@ -179,7 +178,7 @@ server <- function(input, output) {
     #checks if no file has been uploaded
     if(is.null(inFile))
       return(NULL)
-
+    
     file.rename(inFile$datapath,
                 paste(inFile$datapath, ".xlsx", sep=""))
     read_excel(paste(inFile$datapath, ".xlsx", sep=""), currentSheet())
@@ -284,10 +283,10 @@ server <- function(input, output) {
       return(NULL)
     }
     
-     ggplot(top10(), aes(x=Kinase,y=score)) +
-     geom_bar(stat="identity") +
-     scale_x_discrete(limits=top10()$Kinase) +
-     coord_flip() + scale_color_brewer(palette="Paired") + theme_classic()
+    ggplot(top10(), aes(x=Kinase,y=score)) +
+      geom_bar(stat="identity") +
+      scale_x_discrete(limits=top10()$Kinase) +
+      coord_flip() + scale_color_brewer(palette="Paired") + theme_classic()
   })
   
   # download KSEA plot
@@ -301,31 +300,44 @@ server <- function(input, output) {
     }
   )
   
-   # modular identification plot
-   output$modularIdentPlot <- renderPlot({
-     inFile <- input$file
-     print(inFile, digits = NULL,
-           quote = FALSE, right = TRUE, row.names = FALSE, max = NULL)
-     # if no file has been uploaded (to avoid bugs)
-     if (is.null(inFile)) {
-       return(NULL)
-     }
-     file <- read_excel("data/BreastCancerDatatest(merged).xlsx", sheet=2)
-     workingFile <- networkAnalysis(file) #file should be inFile
-     example(workingFile)
-
-     #reading down, from top of row to bottom
-     #as.data.frame( example[1,], drop=false)
-    
-    for (i in 1:length(workingFile$V1)){
-      
+  # modular visual plot
+  output$modularVisualPlot <- renderVisNetwork({
+    inFile <- input$file
+    print(inFile, digits = NULL,
+          quote = FALSE, right = TRUE, row.names = FALSE, max = NULL)
+    # if no file has been uploaded (to avoid bugs)
+    if (is.null(inFile)) {
+      return(NULL)
     }
-   })
+    
+    data <- data <- clean.bcd("data/BreastCancerDatatest.xlsx",2,5)
+    net <- networkAnalysis(data)
+    module_graph <- networkVisual(net, data)
 
+    visIgraph(module_graph,
+              idToLabel = TRUE,
+              layout = "layout_in_circle") %>%
+      visOptions(highlightNearest = TRUE, nodesIdSelection = TRUE)
+      # visEvents(module_graph, click = TRUE)
+     #}
+  })
+  
   #download Modular Identification Plot
-  output$downloadKSEA <- downloadHandler(
-    #filename = function() { past}
+  output$downloadModularVisual <- downloadHandler(
+    filename = function() {
+      paste("modularVisualization", ".html", sep = "")
+    },
+    
+    content = function(file) {
+      network <- visIgraph(module_graph,
+                           idToLabel = TRUE,
+                           layout = "layout_in_circle") %>%
+        visOptions(highlightNearest = TRUE, nodesIdSelection = TRUE)
+      visSave(network, file = "modularVisualization.html")
+    }
   )
+  
+  
 }
 
 # Run the application 
